@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book a Service</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header class="hero">
+      <div class="container">
+        <h1 class="hero-title">Book a Service</h1>
+        <p class="hero-subtitle">Fill in the details to book your service.</p>
+      </div>
+    </header>
+
+    <!-- Booking Form Section -->
+    <section class="booking-form">
+      <div class="container">
+        <h2>Service Details</h2>
+        <form action="booking.php" method="POST">
+          <label for="service">Select Service:</label>
+          <select id="service" name="service" required>
+            <option value="cleaning">Home Cleaning</option>
+            <option value="electrician">Electrician</option>
+            <option value="plumbing">Plumbing</option>
+            <option value="decoration">Decoration</option>
+            <option value="gardening">Gardening</option>
+            <option value="farmworker">Farm Worker</option>
+            <option value="cook">Safe Cook</option>
+            <option value="repair">Home Repairs</option>
+            <option value="painter">Painter</option>
+          </select>
+
+          <label for="date">Select Date:</label>
+          <input type="date" id="date" name="date" required />
+
+          <label for="time">Select Time:</label>
+          <input type="time" id="time" name="time" required />
+
+          <div class="cart">
+            <button type="submit" class="btn">Add to Cart</button>
+            <button type="submit" class="btn">Book Now</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+      <div class="container">
+        <p>&copy; 2025 Service Provider. All rights reserved.</p>
+        <p>
+          <a href="index.html">Home</a> | <a href="about.html">About Us</a> |
+          <a href="contact.html">Contact</a>
+        </p>
+      </div>
+    </footer>
+    <script src="./main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header class="hero">
+      <div class="container">
+        <h1 class="hero-title">Sign Up</h1>
+        <p class="hero-subtitle">Create a new account to get started.</p>
+      </div>
+    </header>
+
+    <!-- Sign Up Form Section -->
+    <section class="login-form">
+      <div class="container">
+        <h2>Sign Up</h2>
+        <form action="signup.php" method="POST">
+          <label for="name">Full Name:</label>
+          <input type="text" id="name" name="name" required />
+
+          <label for="phone">Phone Number (Nepal Number):</label>
+          <input type="text" id="phone" name="phone" required />
+
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+
+          <button type="submit" class="btn">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+      </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+      <div class="container">
+        <p>&copy; 2025 Service Provider. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>
