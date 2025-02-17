@@ -9,9 +9,10 @@
 /******* Nav CSS *******/
 /*******************************/
 .navbar {
-    background-color: #333;
+    background-color: #282929;
     color: #fff;
     padding: 10px 20px;
+    height: 5rem;
 }
 
 .navbar .container {
@@ -22,7 +23,7 @@
 
 .navbar-logo {
     font-size: 24px;
-    color: #fff;
+    color: #f3eeee;
     text-decoration: none;
 }
 
@@ -38,7 +39,7 @@
 }
 
 .navbar-links a {
-    color: #fff;
+    color: #f2eeee;
     text-decoration: none;
     font-size: 18px;
     padding: 5px 10px;
@@ -62,7 +63,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f4f4f4;
+    background-color: whitesmoke;
     color: #333;
     line-height: 1.6;
 }
@@ -79,8 +80,8 @@ body {
 /******* hero CSS *******/
 /*******************************/
 .hero {
-    background: url('./image/clen.jpeg') no-repeat center center/cover;
-    color: rgb(106, 171, 191);
+    background: url('') no-repeat center center/cover;
+    color: rgb(190, 195, 195);
     text-align: center;
     padding: 100px 0;
 }
@@ -89,13 +90,13 @@ body {
     font-size: 3em;
     font-weight: 700;
     margin-bottom: 20px;
-    color: #333;
+    color: #1a1816;
 }
 
 .hero-subtitle {
     font-size: 1.5em;
     margin-bottom: 30px;
-    color: #555;
+    color: #6b6865;
 }
 
 .hero .btn {
