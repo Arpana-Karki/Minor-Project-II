@@ -5,6 +5,9 @@
     box-sizing: border-box;
 }
 /* Navbar Styling */
+/* *******************************/ 
+/******* Nav CSS *******/
+/*******************************/
 .navbar {
     background-color: #333;
     color: #fff;
@@ -71,7 +74,10 @@ body {
     margin: 0 auto;
 }
 
-/* Hero Section */
+/**Hero Section *****/
+/* *******************************/ 
+/******* hero CSS *******/
+/*******************************/
 .hero {
     background: url('./image/clen.jpeg') no-repeat center center/cover;
     color: rgb(106, 171, 191);
@@ -113,7 +119,10 @@ body {
     border-radius: 8px;
 }
 
-/* About Section */
+/* why to connect us */
+/* *******************************/ 
+/******* why to connect us CSS *******/
+/*******************************/
 .about {
     padding: 60px 0;
     text-align: center;
@@ -170,7 +179,7 @@ body {
 }
 
 
-*******************************/
+/* *******************************/ 
 /******* Testimonial CSS *******/
 /*******************************/
 .testimonial {
@@ -246,7 +255,10 @@ body {
 }
 
 
-/* Services Preview Section */
+
+/* *******************************/ 
+/******* Package CSS *******/
+/*******************************/
 .services-preview {
     background-color: #fff;
     padding: 60px 0;
@@ -260,7 +272,7 @@ body {
 }
 
 .service-card {
-    background-color: #007bff;
+    background-color: #9bc3ed;
     color: white;
     text-align: center;
     padding: 30px;
@@ -333,6 +345,9 @@ body {
 }
 
 /* Footer */
+/* *******************************/ 
+/******* Footer CSS *******/
+/*******************************/
 footer {
     background-color: #333;
     color: white;
@@ -422,6 +437,9 @@ footer p a:hover {
 }
 
 /* Style for Login Form */
+/* *******************************/ 
+/*******Login CSS *******/
+/*******************************/
 .login-form {
     max-width: 400px;
     margin: 50px auto;
@@ -466,6 +484,9 @@ footer p a:hover {
 
 
 /* Payment Page Styling */
+/* *******************************/ 
+/*******Payment CSS *******/
+/*******************************/
 .payment-container {
     text-align: center;
     margin-top: 50px;

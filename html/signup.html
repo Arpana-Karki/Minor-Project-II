@@ -16,30 +16,135 @@
     </header>
 
     <!-- Sign Up Form Section -->
-    <section class="login-form">
+    <section class="signup-form">
       <div class="container">
-        <h2>Sign Up</h2>
-        <form action="signup.php" method="POST">
-          <label for="name">Full Name:</label>
-          <input type="text" id="name" name="name" required />
+        <div class="form-box">
+          <h2>Sign Up</h2>
+          <form action="signup.php" method="POST">
+            <div class="form-group">
+              <label for="name">Full Name:</label>
+              <input type="text" id="name" name="name" required />
+            </div>
 
-          <label for="phone">Phone Number (Nepal Number):</label>
-          <input type="text" id="phone" name="phone" required />
+            <div class="form-group">
+              <label for="email">Gmail:</label>
+              <input type="email" id="email" name="email" required />
+            </div>
 
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required />
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" required />
+            </div>
 
-          <button type="submit" class="btn">Sign Up</button>
-        </form>
-        <p>Already have an account? <a href="login.html">Login here</a></p>
+            <button type="submit" class="btn">Sign Up</button>
+          </form>
+          <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
       </div>
     </section>
 
     <!-- Footer Section -->
     <footer>
       <div class="container">
-        <p>&copy; 2025 Service Provider. All rights reserved.</p>
+        <p>&copy; 2025 EasyLiving. All rights reserved.</p>
       </div>
     </footer>
+
+    <style>
+      /* General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f4f4f4;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .hero {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        padding: 20px 0;
+      }
+
+      /* Form Styles */
+      .form-box {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .form-box h2 {
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        background: #0056b3;
+      }
+
+      p {
+        margin-top: 10px;
+      }
+
+      a {
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 10px;
+        margin-top: 20px;
+        background: #007bff;
+        color: white;
+      }
+    </style>
   </body>
 </html>

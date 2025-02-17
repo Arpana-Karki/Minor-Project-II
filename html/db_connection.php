@@ -1,20 +1,14 @@
 <?php
-// db_connection.php
+$servername = "localhost"; // Change if needed
+$username = "root"; // Change to your database username
+$password = ""; // Change to your database password
+$database = "easy_living"; // Your database name
 
-// Database credentials
-$servername = "localhost";  // or your host (e.g., '127.0.0.1' or 'localhost')
-$username = "your_db_username";  // your database username
-$password = "your_db_password";  // your database password
-$dbname = "your_db_name";  // your database name
+// Create connection
+$conn = new mysqli($servername, $username, $password, $database);
 
-// Create a connection to the database
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check if the connection was successful
+// Check connection
 if ($conn->connect_error) {
-    // If there's an error, display it and stop the script
     die("Connection failed: " . $conn->connect_error);
 }
-
-// Connection was successful, no need for further actions here
 ?>

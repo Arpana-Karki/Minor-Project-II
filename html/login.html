@@ -6,56 +6,236 @@
     <title>Login</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
-  <body>
-    <!-- Include Navbar -->
-    <nav class="navbar">
-      <div class="container">
-        <a href="index.html" class="navbar-logo">ServiceProvider</a>
-        <ul class="navbar-links">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="services.html">Services</a></li>
-          <li><a href="login.html">Login</a></li>
-          <li><a href="signup.html">Sign Up</a></li>
-          <li><a href="cart.html">Cart</a></li>
-        </ul>
-      </div>
-    </nav>
+  <style>
+    /* General Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
 
+    body {
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .hero {
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    /* Form Styles */
+    .form-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .form-box h2 {
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    p {
+      margin-top: 10px;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+      background: #007bff;
+      color: white;
+    }
+  </style>
+  <body>
     <!-- Header Section -->
     <header class="hero">
       <div class="container">
         <h1 class="hero-title">Login</h1>
-        <p class="hero-subtitle">Enter your phone number to receive OTP.</p>
+        <p class="hero-subtitle">Access your account</p>
       </div>
     </header>
 
     <!-- Login Form Section -->
     <section class="login-form">
       <div class="container">
-        <h2>Login with OTP</h2>
-        <form action="otp.php" method="POST">
-          <label for="phone">Enter Phone Number (Nepal Number):</label>
-          <input
-            type="text"
-            id="phone"
-            name="phone"
-            placeholder="e.g. 9801234567"
-            required
-          />
+        <div class="form-box">
+          <h2>Login</h2>
+          <form action="login.php" method="POST">
+            <div class="form-group">
+              <label for="email">Gmail:</label>
+              <input type="email" id="email" name="email" required />
+            </div>
 
-          <button type="submit" class="btn">Send OTP</button>
-        </form>
-        <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" required />
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+          </form>
+          <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+        </div>
       </div>
     </section>
 
     <!-- Footer Section -->
     <footer>
       <div class="container">
-        <p>&copy; 2025 Service Provider. All rights reserved.</p>
+        <p>&copy; 2025 EasyLiving. All rights reserved.</p>
       </div>
     </footer>
-    <script src="./main.js"></script>
+
+    <style>
+      /* General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f4f4f4;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .hero {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        padding: 20px 0;
+      }
+
+      /* Form Styles */
+      .form-box {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .form-box h2 {
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        background: #0056b3;
+      }
+
+      p {
+        margin-top: 10px;
+      }
+
+      a {
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        padding: 10px;
+        margin-top: 20px;
+        background: #007bff;
+        color: white;
+      }
+    </style>
   </body>
 </html>
