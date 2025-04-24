@@ -120,17 +120,8 @@ session_start();
                 <li><a href="about.html" class="nav-link hover:text-indigo-600">About</a></li>
                 <li><a href="services.php" class="nav-link hover:text-indigo-600">Services</a></li>
             </ul>
-            <!-- Wishlist -->
-            <a href="wishlist.html" class="action-btn">
-                <i class="fas fa-heart mr-2"></i> Wishlist
-            </a>
-            <!-- My Bookings -->
-            <a href="bookings.html" class="action-btn">
-                <i class="fas fa-calendar-check mr-2"></i> My Bookings
-            </a>
-            <!-- My Profile -->
-            <a href="profile.html" class="action-btn">
-                <i class="fas fa-user-circle mr-2"></i> My Profile
+            <a href="login.php" class="action-btn">
+                <i class="fas fa-sign-in-alt mr-2"></i> Login / Sign Up
             </a>
         </div>
     </div>
@@ -236,12 +227,14 @@ session_start();
 
     <!-- Call to Action Section -->
     <section class="py-16 bg-indigo-600 text-white text-center">
-        <div class="container mx-auto px-4 animate-fade-in-up">
-            <h2 class="text-3xl font-bold mb-4">Ready to Book?</h2>
-            <p class="text-lg mb-6">Get started with your service request today!</p>
-            <a href="select.php" class="bg-yellow-400 text-black px-6 py-3 rounded-full font-semibold hover:bg-yellow-500 transition transform hover:scale-105">Book Now</a>
-        </div>
-    </section>
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-4">Ready to Sign Up / Login?</h2>
+        <p class="mb-6 text-lg">Start accessing our premium services by signing up or logging in.</p>
+        <a href="login.php" class="action-btn inline-block text-white font-semibold">
+            <i class="fas fa-user-plus mr-2"></i> Login / Sign Up
+        </a>
+    </div>
+</section>
 
     <!-- Footer Section -->
     <footer class="bg-gray-900 text-gray-300 py-8">

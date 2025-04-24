@@ -4,7 +4,6 @@ include 'db_connection.php';
 $message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $staff_id = $_POST['staff_id'];
     $name = $_POST['name'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
@@ -17,23 +16,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $photo_name = basename($_FILES["photo"]["name"]);
-    $target_file = $target_dir . $photo_name;
+    $target_file = $target_dir . uniqid() . "_" . $photo_name;
     $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
     if (move_uploaded_file($_FILES["photo"]["tmp_name"], $target_file)) {
-        $sql = "INSERT INTO staff (staff_id, name, email, phone, category, photo) 
-                VALUES ('$staff_id', '$name', '$email', '$phone', '$category', '$target_file')";
-        if (mysqli_query($conn, $sql)) {
+        $stmt = $conn->prepare("INSERT INTO staff (name, email, phone, category, photo) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $name, $email, $phone, $category, $target_file);
+
+        if ($stmt->execute()) {
             $message = "Staff added successfully!";
         } else {
-            $message = "Error adding staff: " . mysqli_error($conn);
+            $message = "Error adding staff: " . $stmt->error;
         }
+
+        $stmt->close();
     } else {
         $message = "Failed to upload photo.";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -120,9 +123,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </p>
     <?php endif; ?>
     <form method="POST" enctype="multipart/form-data">
-        <label>Staff ID</label>
-        <input type="text" name="staff_id" required>
-
         <label>Staff Name</label>
         <input type="text" name="name" required>
 
@@ -140,6 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <button type="submit" class="submit-btn">Add Staff</button>
     </form>
+
 </div>
 </body>
 </html>

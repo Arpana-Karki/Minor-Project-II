@@ -21,7 +21,7 @@ if (!isset($_SESSION['admin_email'])) {
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            background: linear-gradient(135deg, #1a1a1a, #2c3e50);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -35,13 +35,13 @@ if (!isset($_SESSION['admin_email'])) {
         }
 
         .dashboard {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(44, 62, 80, 0.95);
             backdrop-filter: blur(15px);
             border-radius: 20px;
             padding: 40px;
             width: 90%;
             max-width: 1000px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             animation: slideUp 1s ease;
         }
 
@@ -53,7 +53,9 @@ if (!isset($_SESSION['admin_email'])) {
         .dashboard h1 {
             text-align: center;
             margin-bottom: 30px;
-            color: #333;
+            color: #ecf0f1;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
 
         .nav-buttons {
@@ -65,15 +67,15 @@ if (!isset($_SESSION['admin_email'])) {
 
         .nav-buttons a {
             text-decoration: none;
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            color: white;
+            background: linear-gradient(to right, #1abc9c, #16a085);
+            color: #fff;
             padding: 20px 35px;
             border-radius: 30px;
             font-size: 18px;
             font-weight: 500;
             min-width: 200px;
             text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -90,7 +92,7 @@ if (!isset($_SESSION['admin_email'])) {
             height: 0%;
             top: 0;
             left: 0;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
             transition: 0.3s;
             z-index: 0;
         }
@@ -101,6 +103,7 @@ if (!isset($_SESSION['admin_email'])) {
 
         .nav-buttons a:hover {
             transform: scale(1.05);
+            background: linear-gradient(to right, #16a085, #1abc9c);
         }
 
         .logout {
@@ -110,13 +113,13 @@ if (!isset($_SESSION['admin_email'])) {
 
         .logout a {
             text-decoration: none;
-            color: #333;
+            color: #f1c40f;
             font-weight: 600;
             transition: 0.2s;
         }
 
         .logout a:hover {
-            color: #d63031;
+            color: #e67e22;
         }
     </style>
 </head>
@@ -125,7 +128,7 @@ if (!isset($_SESSION['admin_email'])) {
         <h1>Welcome, Admin</h1>
         <div class="nav-buttons">
             <a href="booking.php"><i class="fas fa-calendar-check"></i> View Bookings</a>
-            <a href="services.php"><i class="fas fa-tools"></i> Manage Services</a>
+            <a href="service.php"><i class="fas fa-tools"></i> Manage Services</a>
             <a href="staff.php"><i class="fas fa-user-cog"></i> Manage Staff</a>
         </div>
         <div class="logout">

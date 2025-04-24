@@ -1,50 +1,63 @@
 <?php
-// Include database connection file
+// Include DB connection
 include '../db_connection.php';
 
-// Fetch staff data
-$query = "SELECT * FROM staff";
-$result = mysqli_query($conn, $query);
+// Handle form submission
+if (isset($_POST['submit'])) {
+    $name     = $_POST['name'];
+    $email    = $_POST['email'];
+    $phone    = $_POST['phone'];
+    $category = $_POST['category'];
 
-// Handle search functionality
-if (isset($_POST['search'])) {
-    $searchTerm = $_POST['searchTerm'];
-    $query = "SELECT * FROM staff WHERE name LIKE '%$searchTerm%' OR email LIKE '%$searchTerm%'";
-    $result = mysqli_query($conn, $query);
+    // File Upload
+    $photoName = $_FILES['photo']['name'];
+    $photoTmp  = $_FILES['photo']['tmp_name'];
+    $uploadDir = "uploads";
+
+    // Create uploads/ directory if not exists
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $photoPath = $uploadDir . basename($photoName);
+
+    if (move_uploaded_file($photoTmp, $photoPath)) {
+        // Save to DB
+        $query = "INSERT INTO staff (name, email, phone, category, photo) 
+                  VALUES ('$name', '$email', '$phone', '$category', '$photoName')";
+
+        if (mysqli_query($conn, $query)) {
+            echo "<script>alert('Staff added successfully'); window.location.href='staff.php';</script>";
+        } else {
+            echo "<script>alert('Failed to save data.');</script>";
+        }
+    } else {
+        echo "<script>alert('Failed to upload photo.');</script>";
+    }
 }
-
-// Handle staff deletion
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
-    $deleteQuery = "DELETE FROM staff WHERE id = $id";
-    mysqli_query($conn, $deleteQuery);
-    header("Location: staff.php"); // Redirect after delete
-}
-
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Staff</title>
+    <title>Add New Staff</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
             background-color: #f4f7f6;
+            font-family: 'Roboto', sans-serif;
         }
         .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 60px;
         }
-        h1 {
-            color: #4CAF50;
+        h2 {
             text-align: center;
+            color: #4CAF50;
             margin-bottom: 30px;
         }
         .btn-custom {
@@ -52,77 +65,44 @@ if (isset($_GET['delete'])) {
             color: white;
             border-radius: 30px;
             padding: 10px 30px;
-            font-size: 16px;
             text-transform: uppercase;
         }
         .btn-custom:hover {
             background-color: #45a049;
         }
-        .table th, .table td {
-            text-align: center;
-        }
-        .form-control, .input-group-text {
+        .form-control {
             border-radius: 30px;
-        }
-        .search-bar {
-            margin-bottom: 20px;
-        }
-        .staff-photo {
-            max-width: 100px;
-            border-radius: 50%;
-            object-fit: cover;
         }
     </style>
 </head>
 <body>
 
-<div class="container mt-5">
-    <h1>Manage Staff</h1>
-    
-    <!-- Search Bar -->
-    <form class="search-bar" method="POST">
-        <div class="input-group">
-            <input type="text" class="form-control" name="searchTerm" placeholder="Search by Name or Email">
-            <div class="input-group-append">
-                <button class="btn btn-custom" name="search" type="submit">Search</button>
-            </div>
+<div class="container">
+    <h2>Add New Staff</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Staff Name</label>
+            <input type="text" name="name" class="form-control" placeholder="Enter Name" required>
         </div>
+        <div class="form-group">
+            <label>Email ID</label>
+            <input type="email" name="email" class="form-control" placeholder="Enter Email" required>
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" name="phone" class="form-control" placeholder="Enter Phone" required>
+        </div>
+        <div class="form-group">
+            <label>Service Category</label>
+            <input type="text" name="category" class="form-control" placeholder="Enter Service Category" required>
+        </div>
+        <div class="form-group">
+            <label>Upload Photo</label>
+            <input type="file" name="photo" class="form-control" required>
+        </div>
+        <button type="submit" name="submit" class="btn btn-custom">Add Staff</button>
     </form>
-
-    <!-- Add Staff Button -->
-    <a href="add_staff.php" class="btn btn-custom mb-3">Add New Staff</a>
-
-    <!-- Staff Table -->
-    <table class="table table-bordered">
-        <thead class="thead-light">
-        <tr>
-            <th>Photo</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Category</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-            <tr>
-                <td><img src="uploads/<?php echo $row['photo']; ?>" alt="Staff Photo" class="staff-photo"></td>
-                <td><?php echo $row['name']; ?></td>
-                <td><?php echo $row['email']; ?></td>
-                <td><?php echo $row['phone']; ?></td>
-                <td><?php echo $row['category']; ?></td>
-                <td>
-                    <a href="edit_staff.php?id=<?php echo $row['id']; ?>" class="btn btn-info btn-sm">Edit</a>
-                    <a href="?delete=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-        <?php } ?>
-        </tbody>
-    </table>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

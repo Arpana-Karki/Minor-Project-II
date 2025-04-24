@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #888;
         }
 
-        .btn-login {
+        .btn-login, .btn-back {
             width: 100%;
             padding: 12px;
             background: linear-gradient(to right, #74ebd5, #ACB6E5);
@@ -105,9 +105,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 16px;
             cursor: pointer;
             transition: 0.3s ease;
+            margin-top: 10px;
         }
 
-        .btn-login:hover {
+        .btn-login:hover, .btn-back:hover {
             background: linear-gradient(to right, #ACB6E5, #74ebd5);
         }
 
@@ -139,6 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <button type="submit" class="btn-login">Login</button>
+        <a href="/easy/select.php"><button type="button" class="btn-back">Back</button></a>
 
         <?php if (isset($error)) echo "<p class='error-message'>$error</p>"; ?>
     </form>

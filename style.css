@@ -1,545 +1,163 @@
-/* General Reset and Setup */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-/* Navbar Styling */
-/* *******************************/ 
-/******* Nav CSS *******/
-/*******************************/
-.navbar {
-    background-color: #282929;
-    color: #fff;
-    padding: 10px 20px;
-    height: 5rem;
+/* Fonts and Base Styling */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
 }
 
-.navbar .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.navbar-logo {
-    font-size: 24px;
-    color: #f3eeee;
-    text-decoration: none;
-}
-
-.navbar-links {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-}
-
-.navbar-links li {
-    margin: 0 15px;
-}
-
-.navbar-links a {
-    color: #f2eeee;
-    text-decoration: none;
-    font-size: 18px;
-    padding: 5px 10px;
-}
-
-.navbar-links a:hover {
-    background-color: #555;
-    border-radius: 5px;
-}
-
-@media (max-width: 768px) {
-    .navbar .container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .navbar-links {
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        display: none; /* Initially hidden */
-    }
-
-    .navbar-links.active {
-        display: flex; /* Show when active */
-    }
-
-    .navbar-links li {
-        margin: 10px 0;
-    }
-
-    /* Add a hamburger menu */
-    .menu-toggle {
-        display: block;
-        cursor: pointer;
-        font-size: 24px;
-        color: #fff;
-        background: none;
-        border: none;
-        position: absolute;
-        right: 20px;
-        top: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .navbar-logo {
-        font-size: 20px;
-    }
-
-    .menu-toggle {
-        font-size: 20px;
-    }
-}
-
-
-/* Container for center alignment */
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/**Hero Section *****/
-/* *******************************/ 
-/******* hero CSS *******/
-/*******************************/
+/* Hero Section */
 .hero {
-    background: url('') no-repeat center center/cover;
-    color: rgb(190, 195, 195);
-    text-align: center;
-    padding: 100px 0;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    padding: 120px 20px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 0 80px 80px;
 }
 
 .hero-title {
-    font-size: 3em;
+    font-size: 3rem;
     font-weight: 700;
-    margin-bottom: 20px;
-    color: #1a1816;
+    margin-bottom: 10px;
 }
 
 .hero-subtitle {
-    font-size: 1.5em;
+    font-size: 1.2rem;
     margin-bottom: 30px;
-    color: #6b6865;
 }
 
-.hero .btn {
-    background-color: #007bff;
-    color: #fff;
+.hero-btn {
+    background-color: #ffc107;
+    color: #000;
     padding: 12px 30px;
-    text-decoration: none;
-    font-size: 1.2em;
-    border-radius: 5px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: 0.3s;
 }
 
-.hero .btn:hover {
-    background-color: #0056b3;
+.hero-btn:hover {
+    background-color: #e0a800;
+    transform: scale(1.05);
 }
 
-/* Image in Hero Section */
-.hero-image img {
-    width: 100%;
-    max-width: 600px;
-    margin-top: 30px;
-    border-radius: 8px;
-}
-
-/* why to connect us */
-/* *******************************/ 
-/******* why to connect us CSS *******/
-/*******************************/
-.about {
-    padding: 60px 0;
-    text-align: center;
-    background-color: #f9f9f9;
-}
-
-.about h2 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-}
-
-.about p {
-    font-size: 1.2em;
-    margin-bottom: 40px;
-}
-
-.features {
-    display: flex;
-    justify-content: space-around;
+/* Feature & Service Cards */
+.features, .service-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
     margin-top: 40px;
 }
 
-.feature {
-    flex: 1;
+.feature, .service-card {
+    background: #fff;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 0 10px;
+    border-radius: 20px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
     text-align: center;
+    transition: 0.3s;
 }
 
-.feature i {
-    font-size: 2.5em;
-    color: #007bff;
-    margin-bottom: 10px;
+.feature:hover, .service-card:hover {
+    transform: translateY(-5px);
 }
 
-.feature h3 {
-    font-size: 1.8em;
-    margin-bottom: 10px;
+.feature i, .service-card i {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #0f9d58;
 }
 
-.feature p {
-    font-size: 1.1em;
-}
-
-/* Image in Feature Section */
-.feature-image img {
+.feature-image img, .service-image img {
     width: 100%;
-    max-width: 300px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
     margin-top: 15px;
-    border-radius: 8px;
 }
 
-
-/* *******************************/ 
-/******* Testimonial CSS *******/
-/*******************************/
+/* Testimonial Carousel */
 .testimonial {
-    position: relative;
-    padding: 45px 0;
+    background: #f0f0f0;
+    padding: 80px 0;
+    border-radius: 60px 60px 0 0;
 }
 
-.testimonial .testimonial-item {
-    position: relative;
-    margin: 0 15px;
+.section-header {
     text-align: center;
+    margin-bottom: 50px;
 }
 
-.testimonial .testimonial-img {
-    position: relative;
-    margin-bottom: 15px;
-    z-index: 1;
-}
-
-.testimonial .testimonial-item img {
-    margin: 0 auto;
-    width: 150px;
-    border: 15px solid #ffffff;
-    border-radius: 100px;
-}
-
-.testimonial .testimonial-content {
-    position: relative;
-    margin-top: -90px;
-    padding: 100px 25px 25px 25px;
-    text-align: center;
-    background: #FFD662;
-    border-radius: 5px;
-}
-
-.testimonial .testimonial-item p {
-    color: #000000;
-    font-size: 16px;
-    font-weight: 400;
-}
-
-.testimonial .testimonial-content h3 {
-    color: #000000;
-    font-size: 18px;
-    font-weight: 400;
-    text-transform: uppercase;
-    margin-bottom: 5px;
-}
-
-.testimonial .testimonial-content h4 {
-    font-size: 14px;
-    font-weight: 400;
-    margin-bottom: 0;
-}
-
-.testimonial .owl-nav,
-.testimonial .owl-dots {
-    margin-top: 15px;
-    text-align: center;
-}
-
-.testimonial .owl-dot {
-    display: inline-block;
-    margin: 0 5px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #FFD662;
-}
-
-.testimonial .owl-dot.active {
-    background: #00539C;
-}
-
-
-
-/* *******************************/ 
-/******* Package CSS *******/
-/*******************************/
-.services-preview {
-    background-color: #fff;
-    padding: 60px 0;
-}
-
-.service-cards {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.service-card {
-    background-color: #9bc3ed;
-    color: white;
-    text-align: center;
+.testimonial-item {
+    background: white;
     padding: 30px;
-    border-radius: 10px;
-    flex: 1;
-}
-
-.service-card h3 {
-    font-size: 2em;
-    margin-bottom: 15px;
-}
-
-.service-card p {
-    font-size: 1.2em;
-    margin-bottom: 20px;
-}
-
-.service-card .btn {
-    background-color: #fff;
-    color: #007bff;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.2em;
-}
-
-.service-card .btn:hover {
-    background-color: #0056b3;
-    color: #fff;
-}
-
-/* Image in Service Section */
-.service-image img {
-    width: 100%;
-    max-width: 300px;
-    margin-top: 15px;
-    border-radius: 8px;
-}
-
-/* Call to Action Section */
-.cta {
-    background-color: #007bff;
-    color: white;
+    border-radius: 15px;
     text-align: center;
-    padding: 60px 0;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
 }
 
-.cta h2 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
+.testimonial-img img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    object-fit: cover;
 }
 
-.cta p {
-    font-size: 1.5em;
-    margin-bottom: 30px;
+/* Call to Action */
+.cta {
+    background: #0f2027;
+    color: #fff;
+    text-align: center;
+    padding: 80px 20px;
+    border-radius: 80px 80px 0 0;
 }
 
 .cta .btn {
-    background-color: #fff;
-    color: #007bff;
+    background-color: #ffc107;
+    color: #000;
     padding: 12px 30px;
-    text-decoration: none;
-    font-size: 1.5em;
-    border-radius: 5px;
+    border-radius: 30px;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: all 0.3s ease-in-out;
 }
 
 .cta .btn:hover {
-    background-color: #0056b3;
-    color: #fff;
+    background-color: #ff9800;
+    transform: scale(1.05);
 }
 
 /* Footer */
-/* *******************************/ 
-/******* Footer CSS *******/
-/*******************************/
 footer {
-    background-color: #333;
-    color: white;
-    padding: 20px 0;
+    background-color: #282929;
+    color: #ccc;
     text-align: center;
+    padding: 30px 10px;
+    font-size: 0.9rem;
 }
 
-footer p {
-    font-size: 1em;
-}
-
-footer p a {
-    color: #fff;
+footer a {
+    color: #ddd;
     text-decoration: none;
+    margin: 0 5px;
 }
 
-footer p a:hover {
+footer a:hover {
     text-decoration: underline;
 }
 
-/* Responsive Styling */
-@media screen and (max-width: 768px) {
-    .hero-title {
-        font-size: 2.5em;
+/* Smooth Animation */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
-
-    .hero-subtitle {
-        font-size: 1.3em;
-    }
-
-    .service-cards {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .service-card {
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    .feature {
-        flex: 1;
-        margin-bottom: 20px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-/* Add image styling inside service card */
-.service-card {
-    width: 30%;
-    padding: 10px;
-    box-sizing: border-box;
-    text-align: center;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 20px;
+.hero, .features, .service-cards, .testimonial, .cta {
+    animation: fadeUp 1s ease-in-out both;
 }
-
-.service-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.service-card h3 {
-    font-size: 1.5rem;
-    margin-top: 10px;
-}
-
-.service-card p {
-    font-size: 1rem;
-    color: #555;
-}
-
-.service-card .btn {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    text-decoration: none;
-    border-radius: 5px;
-    display: inline-block;
-    margin-top: 10px;
-}
-
-.service-card .btn:hover {
-    background-color: #0056b3;
-}
-
-/* Style for Login Form */
-/* *******************************/ 
-/*******Login CSS *******/
-/*******************************/
-.login-form {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.login-form h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.login-form input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-.login-form button {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.login-form button:hover {
-    background-color: #0056b3;
-}
-
-.login-form p {
-    text-align: center;
-    margin-top: 20px;
-}
-
-
-/* Payment Page Styling */
-/* *******************************/ 
-/*******Payment CSS *******/
-/*******************************/
-.payment-container {
-    text-align: center;
-    margin-top: 50px;
-}
-
-.payment-container form {
-    margin: 20px 0;
-}
-
-.payment-container input {
-    margin: 10px;
-    padding: 5px;
-}
-
-.payment-container button {
-    padding: 10px 20px;
-    background-color: #333;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.payment-container button:hover {
-    background-color: #555;
-}
-
-
