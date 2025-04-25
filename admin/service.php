@@ -510,7 +510,7 @@ $services_list_result = mysqli_query($conn, $services_list_query);
 <body>
     <nav class="navbar">
         <div class="back-to-dashboard">
-            <a href="admin/dash.php"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            <a href="dash.php"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         </div>
         <div class="nav-links">
             <a href="#" onclick="openModal('addServiceModal')"><i class="fas fa-plus"></i> Add Service</a>

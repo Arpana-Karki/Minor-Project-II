@@ -118,18 +118,18 @@ session_start();
             <ul class="flex space-x-6 text-gray-700">
                 <li><a href="index.php" class="nav-link hover:text-indigo-600">Home</a></li>
                 <li><a href="about.html" class="nav-link hover:text-indigo-600">About</a></li>
-                <li><a href="services.php" class="nav-link hover:text-indigo-600">Services</a></li>
+                <li><a href="customer/subservice.php" class="nav-link hover:text-indigo-600">Services</a></li>
             </ul>
             <!-- Wishlist -->
-            <a href="wishlist.html" class="action-btn">
+            <a href="customer/favorites.php" class="action-btn">
                 <i class="fas fa-heart mr-2"></i> Wishlist
             </a>
             <!-- My Bookings -->
-            <a href="bookings.html" class="action-btn">
+            <a href="customer/my_bookings.php" class="action-btn">
                 <i class="fas fa-calendar-check mr-2"></i> My Bookings
             </a>
             <!-- My Profile -->
-            <a href="profile.html" class="action-btn">
+            <a href="profile.php" class="action-btn">
                 <i class="fas fa-user-circle mr-2"></i> My Profile
             </a>
         </div>
@@ -142,7 +142,7 @@ session_start();
             <div class="md:w-1/2 animate-fade-in-up">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">Your Trusted Service Provider</h1>
                 <p class="text-lg mb-6">Professional services at your doorstep, anytime, anywhere.</p>
-                <a href="services.php" class="bg-yellow-400 text-black px-6 py-3 rounded-full font-semibold hover:bg-yellow-500 transition transform hover:scale-105">Explore Our Services</a>
+                <a href="customer/subservice.php" class="bg-yellow-400 text-black px-6 py-3 rounded-full font-semibold hover:bg-yellow-500 transition transform hover:scale-105">Explore Our Services</a>
             </div>
             <div class="md:w-1/2 mt-8 md:mt-0">
                 <img src="./image/twooPM.jpeg" alt="Hero Image" class="w-3/4 mx-auto rounded-lg shadow-lg">

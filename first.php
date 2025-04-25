@@ -120,7 +120,7 @@ session_start();
                 <li><a href="about.html" class="nav-link hover:text-indigo-600">About</a></li>
                 <li><a href="services.php" class="nav-link hover:text-indigo-600">Services</a></li>
             </ul>
-            <a href="login.php" class="action-btn">
+            <a href="select.php" class="action-btn">
                 <i class="fas fa-sign-in-alt mr-2"></i> Login / Sign Up
             </a>
         </div>
