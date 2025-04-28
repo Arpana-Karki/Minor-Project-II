@@ -1,4 +1,3 @@
-
 <?php
 // Start the session or any PHP logic needed
 session_start();
@@ -15,8 +14,6 @@ session_start();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -109,51 +106,53 @@ session_start();
         html {
             scroll-behavior: smooth;
         }
-        /* Swiper Slider Styling */
+        /* Custom Testimonial Slider */
         .testimonial-slider {
-            padding-bottom: 50px; /* Space for pagination */
             position: relative;
+            overflow: hidden;
+            padding-bottom: 20px;
         }
-        .testimonial-slider .swiper-slide {
+        .slider-container {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .slider-item {
+            flex: 0 0 33.33%;
+            padding: 0 15px;
+            box-sizing: border-box;
             opacity: 0.7;
             transition: opacity 0.3s ease;
         }
-        .testimonial-slider .swiper-slide-active {
+        .slider-item.active {
             opacity: 1;
         }
-        .testimonial-slider .swiper-button-prev,
-        .testimonial-slider .swiper-button-next {
-            color: #4f46e5;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+        .slider-nav {
             display: flex;
-            align-items: center;
             justify-content: center;
-            transition: background 0.3s ease;
+            gap: 10px;
+            margin-top: 20px;
         }
-        /* .testimonial-slider .swiper-button-prev:hover,
-        .testimonial-slider .swiper-button-next:hover {
-            background: #4f46e5;
-            color: white;
-        } */
-        .testimonial-slider .swiper-pagination {
-            position: absolute;
-            bottom: 10px;
-        }
-        .testimonial-slider .swiper-pagination-bullet {
+        .slider-dot {
+            width: 12px;
+            height: 12px;
             background: #4f46e5;
             opacity: 0.5;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
         }
-        .testimonial-slider .swiper-pagination-bullet-active {
+        .slider-dot.active {
             opacity: 1;
         }
-        /* Hide Swiper elements outside testimonial section */
-        .swiper-button-prev:not(.testimonial-slider .swiper-button-prev),
-        .swiper-button-next:not(.testimonial-slider .swiper-button-next),
-        .swiper-pagination:not(.testimonial-slider .swiper-pagination) {
-            display: none !important;
+        @media (max-width: 1024px) {
+            .slider-item {
+                flex: 0 0 50%;
+            }
+        }
+        @media (max-width: 640px) {
+            .slider-item {
+                flex: 0 0 100%;
+            }
         }
     </style>
 </head>
@@ -167,12 +166,12 @@ session_start();
                 <ul class="flex space-x-6 text-gray-700">
                     <li><a href="index.php" class="nav-link hover:text-indigo-600">Home</a></li>
                     <li><a href="about.php" class="nav-link hover:text-indigo-600">About</a></li>
-                    <li><a href="./customer/customer_package.php" class="nav-link hover:text-indigo-600">Packages</a></li>
+                    <li><a href="./customer/package.php" class="nav-link hover:text-indigo-600">Packages</a></li>
                     <li><a href="./customer/subservice.php" class="nav-link hover:text-indigo-600">Services</a></li>
                 </ul>
                 <!-- Wishlist -->
                 <a href="customer/favorites.php" class="action-btn">
-                    <i class="fas fa-heart mr-2"></i> Wishlist
+                    <i class="fas fa-heart mr-2"></i> Favorites
                 </a>
                 <!-- My Bookings -->
                 <a href="customer/my_bookings.php" class="action-btn">
@@ -230,6 +229,42 @@ session_start();
         </div>
     </section>
 
+    <!-- Our Popular Services Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 animate-fade-in-up">Our Popular Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="service-card bg-white p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
+                    <i class="fas fa-wrench text-4xl text-indigo-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Appliance Repair</h3>
+                    <p class="text-gray-600 mb-4">Fix your appliances quickly with our expert technicians.</p>
+                    <img src="./image/appliance.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <a href="./customer/service.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                </div>
+                <div class="service-card bg-white p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
+                    <i class="fas fa-leaf text-4xl text-indigo-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Gardening Services</h3>
+                    <p class="text-gray-600 mb-4">Transform your outdoor space with professional gardening.</p>
+                    <img src="./image/gardening.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <a href="./customer/service.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                </div>
+                <div class="service-card bg-white p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
+                    <i class="fas fa-shield-alt text-4xl text-indigo-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Pest Control</h3>
+                    <p class="text-gray-600 mb-4">Keep your home pest-free with our safe and effective solutions.</p>
+                    <img src="./image/pest.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <a href="./customer/service.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <a href="./customer/service.php" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105 inline-flex items-center">
+                    <span>Explore More Services</span>
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Why Choose Us Section -->
     <section class="py-16 bg-gray-100">
         <div class="container mx-auto px-4">
@@ -260,12 +295,12 @@ session_start();
     <!-- Testimonial Section -->
     <section class="py-16 bg-gray-200">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12 animate-fade-in-up">Client Says About Our Services</h2>
-            <div class="swiper-container testimonial-slider">
-                <div class="swiper-wrapper">
+            <h2 class="text-3xl font-bold text-center mb-12 animate-fade-in-up">What Our Clients Say About Us</h2>
+            <div class="testimonial-slider">
+                <div class="slider-container" id="testimonialSlider">
                     <!-- Testimonial 1 -->
-                    <div class="swiper-slide">
-                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
                             <img src="./image/balen.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
                             <p class="text-gray-600 mb-4">"Easy Living provides exceptional services! I booked an electrician, and the work was done professionally and on time."</p>
                             <h3 class="font-semibold">Balen Shah</h3>
@@ -273,8 +308,8 @@ session_start();
                         </div>
                     </div>
                     <!-- Testimonial 2 -->
-                    <div class="swiper-slide">
-                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
                             <img src="./image/pra.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
                             <p class="text-gray-600 mb-4">"Reliable, efficient, and professional! The home cleaning service was outstanding."</p>
                             <h3 class="font-semibold">Parash Khadka</h3>
@@ -282,8 +317,8 @@ session_start();
                         </div>
                     </div>
                     <!-- Testimonial 3 -->
-                    <div class="swiper-slide">
-                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
                             <img src="./image/pri.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
                             <p class="text-gray-600 mb-4">"I was impressed by the seamless experience of booking a home cleaning service."</p>
                             <h3 class="font-semibold">Priyanka Karki</h3>
@@ -291,8 +326,8 @@ session_start();
                         </div>
                     </div>
                     <!-- Testimonial 4 -->
-                    <div class="swiper-slide">
-                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
                             <img src="./image/client4.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
                             <p class="text-gray-600 mb-4">"The plumbing service was top-notch! Quick response and excellent work."</p>
                             <h3 class="font-semibold">Anita Shrestha</h3>
@@ -300,8 +335,8 @@ session_start();
                         </div>
                     </div>
                     <!-- Testimonial 5 -->
-                    <div class="swiper-slide">
-                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
                             <img src="./image/client5.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
                             <p class="text-gray-600 mb-4">"I highly recommend their decoration services. My home looks amazing!"</p>
                             <h3 class="font-semibold">Ramesh Gurung</h3>
@@ -309,11 +344,11 @@ session_start();
                         </div>
                     </div>
                 </div>
-                <!-- Navigation Buttons -->
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
-                <!-- Pagination -->
-                <div class="swiper-pagination"></div>
+                <div class="slider-nav">
+                    <div class="slider-dot active" data-index="0"></div>
+                    <div class="slider-dot" data-index="1"></div>
+                    <div class="slider-dot" data-index="2"></div>
+                </div>
             </div>
         </div>
     </section>
@@ -379,38 +414,38 @@ session_start();
                 dropdownMenu.style.transform = 'translateY(-10px)';
             });
         }
-    </script>
-    <!-- Swiper JS -->
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <script>
-        // Initialize Swiper for testimonial slider only
-        const swiper = new Swiper('.testimonial-slider', {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            loop: true,
-            pagination: {
-                el: '.testimonial-slider .swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.testimonial-slider .swiper-button-next',
-                prevEl: '.testimonial-slider .swiper-button-prev',
-            },
-            breakpoints: {
-                640: {
-                    slidesPerView: 2,
-                    spaceBetween: 20,
-                },
-                1024: {
-                    slidesPerView: 3,
-                    spaceBetween: 30,
-                },
-            },
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false,
-            },
+
+        // Custom Testimonial Slider
+        const sliderContainer = document.getElementById('testimonialSlider');
+        const sliderItems = document.querySelectorAll('.slider-item');
+        const sliderDots = document.querySelectorAll('.slider-dot');
+        let currentIndex = 0;
+
+        function updateSlider() {
+            const offset = currentIndex * -33.33;
+            sliderContainer.style.transform = `translateX(${offset}%)`;
+            sliderItems.forEach((item, index) => {
+                item.classList.toggle('active', index === currentIndex);
+            });
+            sliderDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        sliderDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                currentIndex = parseInt(dot.getAttribute('data-index'));
+                updateSlider();
+            });
         });
+
+        // Auto-slide every 5 seconds
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % 3;
+            updateSlider();
+        }, 5000);
+
+        updateSlider();
     </script>
 </body>
 </html>

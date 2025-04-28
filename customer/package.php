@@ -1,76 +1,60 @@
 <?php
 session_start();
-
-// Enable error reporting
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
 
-// Include database connection
-try {
-    include('../db_connection.php');
-} catch (Exception $e) {
-    die("Failed to include db_connection.php: " . $e->getMessage());
+require_once('../db_connection.php');
+
+$customer_id = $_SESSION['customer_id'] ?? 1;
+$customer_id = (int)$customer_id;
+$_SESSION['favorites'] ??= [];
+
+$booking_error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_favorites'])) {
+    $subservice_id = (int)$_POST['toggle_favorites'];
+
+    $stmt = mysqli_prepare($conn, "SELECT id FROM favorites WHERE customer_id = ? AND subservice_id = ?");
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, 'ii', $customer_id, $subservice_id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+
+        if (mysqli_stmt_num_rows($stmt) > 0) {
+            $del = mysqli_prepare($conn, "DELETE FROM favorites WHERE customer_id = ? AND subservice_id = ?");
+            mysqli_stmt_bind_param($del, 'ii', $customer_id, $subservice_id);
+            mysqli_stmt_execute($del);
+            mysqli_stmt_close($del);
+        } else {
+            $ins = mysqli_prepare($conn, "INSERT INTO favorites (customer_id, subservice_id) VALUES (?, ?)");
+            mysqli_stmt_bind_param($ins, 'ii', $customer_id, $subservice_id);
+            mysqli_stmt_execute($ins);
+            mysqli_stmt_close($ins);
+        }
+        mysqli_stmt_close($stmt);
+    }
 }
 
-// Check if customer is logged in (temporary bypass for testing)
-$customer_id = isset($_SESSION['customer_id']) ? (int)$_SESSION['customer_id'] : 1;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_booking'])) {
+    // Sanitize and validate inputs
+    $subservice_id = isset($_POST['subservice_id']) ? (int)$_POST['subservice_id'] : 0;
+    $staff_id = isset($_POST['staff_id']) ? (int)$_POST['staff_id'] : 0;
+    $subservice_name = mysqli_real_escape_string($conn, $_POST['subservice_name'] ?? '');
+    $customer_name = mysqli_real_escape_string($conn, $_POST['customer_name'] ?? '');
+    $address = mysqli_real_escape_string($conn, $_POST['address'] ?? '');
+    $phone = mysqli_real_escape_string($conn, $_POST['phone'] ?? '');
+    $landmark = !empty($_POST['landmark']) ? mysqli_real_escape_string($conn, $_POST['landmark']) : null;
+    $note = !empty($_POST['note']) ? mysqli_real_escape_string($conn, $_POST['note']) : null;
+    $booking_datetime = $_POST['booking_datetime'] ?? '';
 
-// Debug: Log session data
-error_log("Session data: " . print_r($_SESSION, true));
-
-// Define dummy subservice_id for package bookings
-define('DUMMY_SUBSERVICE_ID', 999); // Must match the ID inserted in subservices table
-
-// Handle booking form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_now'])) {
-    $package_id = isset($_POST['package_id']) ? (int)$_POST['package_id'] : 0;
-    // Ensure staff_id is a referenceable variable
-    $staff_id_temp = !empty($_POST['staff_id']) && (int)$_POST['staff_id'] > 0 ? (int)$_POST['staff_id'] : null;
-    $package_name = mysqli_real_escape_string($conn, $_POST['package_name']);
-    $customer_name = mysqli_real_escape_string($conn, $_POST['customer_name']);
-    $address = mysqli_real_escape_string($conn, $_POST['address']);
-    $phone = mysqli_real_escape_string($conn, $_POST['phone']);
-    // Ensure landmark and note are referenceable
-    $landmark_temp = !empty($_POST['landmark']) ? mysqli_real_escape_string($conn, $_POST['landmark']) : null;
-    $note_temp = !empty($_POST['order_note']) ? mysqli_real_escape_string($conn, $_POST['order_note']) : null;
-    $booking_datetime = $_POST['booking_datetime'];
-    $is_package = 1; // Indicate this is a package booking
-
-    // Debug: Log package_id
-    error_log("Received package_id: $package_id");
-
-    // Parse datetime-local input
     $datetime = DateTime::createFromFormat('Y-m-d\TH:i', $booking_datetime);
-    if ($datetime) {
-        $booking_date = $datetime->format('Y-m-d');
-        $booking_time = $datetime->format('H:i:s');
-    } else {
-        $booking_date = null;
-        $booking_time = null;
-    }
+    $booking_date = $datetime ? $datetime->format('Y-m-d') : null;
+    $booking_time = $datetime ? $datetime->format('H:i:s') : null;
 
-    // Log form data for debugging
-    error_log("Booking data: " . print_r([
-        'subservice_id' => DUMMY_SUBSERVICE_ID,
-        'package_id' => $package_id,
-        'staff_id' => $staff_id_temp,
-        'subservice_name' => $package_name,
-        'customer_name' => $customer_name,
-        'address' => $address,
-        'phone' => $phone,
-        'landmark' => $landmark_temp,
-        'note' => $note_temp,
-        'booking_date' => $booking_date,
-        'booking_time' => $booking_time,
-        'customer_id' => $customer_id,
-        'is_package' => $is_package
-    ], true));
-
-    // Validate required fields
     $missing_fields = [];
-    if (empty($package_id) || $package_id <= 0) $missing_fields[] = 'package_id';
-    if (empty($package_name)) $missing_fields[] = 'package_name';
+    if (!$subservice_id) $missing_fields[] = 'subservice_id';
+    if (!$staff_id) $missing_fields[] = 'staff_id';
+    if (empty($subservice_name)) $missing_fields[] = 'subservice_name';
     if (empty($customer_name)) $missing_fields[] = 'customer_name';
     if (empty($address)) $missing_fields[] = 'address';
     if (empty($phone)) $missing_fields[] = 'phone';
@@ -78,53 +62,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_now'])) {
     if (empty($booking_time)) $missing_fields[] = 'booking_time';
 
     if (!empty($missing_fields)) {
-        $booking_error = "The following required fields are missing or invalid: " . implode(', ', $missing_fields);
-        error_log("Validation failed: " . $booking_error);
+        $booking_error = "Missing: " . implode(', ', $missing_fields);
     } else {
-        try {
-            $query = "INSERT INTO bookings (subservice_id, subservice_name, staff_id, customer_name, address, phone, landmark, note, booking_date, booking_time, customer_id, is_package) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = mysqli_prepare($conn, $query);
-            mysqli_stmt_bind_param($stmt, 'isisssssssii', DUMMY_SUBSERVICE_ID, $package_name, $staff_id_temp, $customer_name, $address, $phone, $landmark_temp, $note_temp, $booking_date, $booking_time, $customer_id, $is_package);
-            mysqli_stmt_execute($stmt);
-            $booking_success = "Your booking is confirmed!";
-            mysqli_stmt_close($stmt);
-        } catch (Exception $e) {
-            $booking_error = "Failed to save booking: " . $e->getMessage();
-            error_log("Booking error: " . $e->getMessage());
-        }
+        $query = "INSERT INTO bookings (subservice_id, subservice_name, staff_id, customer_name, address, phone, landmark, note, booking_date, booking_time, customer_id) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, 'isisssssssi', 
+            $subservice_id, 
+            $subservice_name, 
+            $staff_id, 
+            $customer_name, 
+            $address, 
+            $phone, 
+            $landmark, 
+            $note, 
+            $booking_date, 
+            $booking_time, 
+            $customer_id
+        );
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        echo "<script>alert('Booking Confirmed!'); window.location.href='my_bookings.php';</script>";
+        exit();
     }
 }
 
-// Fetch packages and staff names
-try {
-    $packages_query = "
-        SELECT 
-            p.id, p.name AS package_name, p.description, p.price, p.image, p.staff_id, s.name AS staff_name
-        FROM 
-            packages p
-        LEFT JOIN 
-            staff s ON p.staff_id = s.id
-        WHERE 
-            p.id IS NOT NULL AND p.id > 0
-    ";
-    $packages_result = mysqli_query($conn, $packages_query);
-    $packages = [];
-    while ($package = mysqli_fetch_assoc($packages_result)) {
-        // Ensure staff_id is 0 if NULL for display (not insertion)
-        $package['staff_id'] = $package['staff_id'] ? (int)$package['staff_id'] : 0;
-        $packages[] = $package;
+// Fetch services
+$parent_service_id = isset($_GET['parent_service_id']) ? (int)$_GET['parent_service_id'] : null;
+$search = trim($_GET['search'] ?? '');
+
+$subservices_query = "
+    SELECT 
+        ss.id, 
+        ss.subservice_name, 
+        ss.amount, 
+        ss.photo, 
+        s.category AS parent_category,
+        GROUP_CONCAT(st.name SEPARATOR ', ') AS staff_names,
+        GROUP_CONCAT(st.id) AS staff_ids
+    FROM subservices ss
+    JOIN services s ON ss.parent_service_id = s.id
+    LEFT JOIN staff_subservices sts ON ss.id = sts.subservice_id
+    LEFT JOIN staff st ON sts.staff_id = st.id
+";
+
+$conditions = [];
+$params = [];
+$types = '';
+
+if ($parent_service_id) {
+    $conditions[] = "ss.parent_service_id = ?";
+    $params[] = $parent_service_id;
+    $types .= 'i';
+}
+if ($search) {
+    $conditions[] = "(ss.subservice_name LIKE ? OR s.category LIKE ?)";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+    $types .= 'ss';
+}
+if ($conditions) {
+    $subservices_query .= " WHERE " . implode(' AND ', $conditions);
+}
+$subservices_query .= " GROUP BY ss.id ORDER BY ss.subservice_name";
+
+$subservices = [];
+$stmt = mysqli_prepare($conn, $subservices_query);
+if ($stmt) {
+    if ($params) {
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
     }
-    // Debug: Log fetched packages
-    error_log("Fetched packages: " . print_r($packages, true));
-} catch (Exception $e) {
-    die("Packages query failed: " . $e->getMessage());
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $row['first_staff_name'] = $row['staff_names'] ? explode(', ', $row['staff_names'])[0] : 'Not assigned';
+        $row['first_staff_id'] = $row['staff_ids'] ? (int)explode(',', $row['staff_ids'])[0] : 0;
+        $subservices[] = $row;
+    }
+    mysqli_stmt_close($stmt);
+} else {
+    die('Query failed: ' . mysqli_error($conn));
 }
 ?>
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Packages - Easy Living</title>
     <style>
         body {
@@ -178,7 +209,7 @@ try {
             color: #444;
             font-weight: bold;
         }
-        .book-now-btn {
+        .open-book-now-btn {
             background: #007bff;
             color: white;
             border: none;
@@ -190,7 +221,7 @@ try {
             border-radius: 5px;
             transition: 0.3s;
         }
-        .book-now-btn:hover {
+        .open-book-now-btn:hover {
             background: #0056b3;
         }
         .modal {
@@ -232,144 +263,93 @@ try {
             top: 10px;
             border-radius: 5px;
         }
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 10px 15px;
-            margin-bottom: 20px;
-            border: 1px solid #c3e6cb;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 10px 15px;
-            margin-bottom: 20px;
-            border: 1px solid #f5c6cb;
-            border-radius: 5px;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
-    <?php if (isset($booking_success)): ?>
-        <div class="success-message">
-            <?php echo htmlspecialchars($booking_success); ?>
-        </div>
-    <?php elseif (isset($booking_error)): ?>
-        <div class="error-message">
-            <?php echo htmlspecialchars($booking_error); ?>
-        </div>
-    <?php endif; ?>
 
-    <div class="container">
-        <?php foreach ($packages as $package): ?>
+<?php if (!empty($booking_error)): ?>
+    <div style="color: red; text-align: center; margin-bottom: 20px;">
+        <?php echo htmlspecialchars($booking_error); ?>
+    </div>
+<?php endif; ?>
+
+<div class="container">
+    <?php if (!empty($subservices)): ?>
+        <?php foreach ($subservices as $package): ?>
             <div class="package-card">
-                <img src="../admin/uploads/<?php echo htmlspecialchars($package['image']); ?>" alt="Package Image">
+                <img src="../admin/uploads/<?php echo htmlspecialchars($package['photo']); ?>" alt="Package Image">
                 <div class="package-details">
-                    <h3><?php echo htmlspecialchars($package['package_name']); ?></h3>
-                    <p><?php echo htmlspecialchars($package['description']); ?></p>
-                    <p class="price">Rs. <?php echo htmlspecialchars($package['price']); ?></p>
-                    <p class="staff-info">Staff: <?php echo htmlspecialchars($package['staff_name'] ?? 'Not Assigned'); ?></p>
-                    <button class="book-now-btn" 
-                            data-package-id="<?php echo htmlspecialchars($package['id']); ?>"
-                            data-package-name="<?php echo htmlspecialchars($package['package_name']); ?>"
-                            data-staff-name="<?php echo htmlspecialchars($package['staff_name'] ?? 'Not Assigned'); ?>"
-                            data-staff-id="<?php echo htmlspecialchars($package['staff_id']); ?>">
+                    <h3><?php echo htmlspecialchars($package['subservice_name']); ?></h3>
+                    <p class="price">Rs. <?php echo number_format((float)$package['amount'], 2); ?></p>
+                    <p class="staff-info">Staff: <?php echo htmlspecialchars($package['first_staff_name']); ?></p>
+                    <button class="open-book-now-btn"
+                        data-package-id="<?php echo (int)$package['id']; ?>"
+                        data-package-name="<?php echo htmlspecialchars($package['subservice_name']); ?>"
+                        data-staff-name="<?php echo htmlspecialchars($package['first_staff_name']); ?>"
+                        data-staff-id="<?php echo (int)$package['first_staff_id']; ?>">
                         Book Now
                     </button>
                 </div>
             </div>
         <?php endforeach; ?>
+    <?php else: ?>
+        <p>No packages available at the moment.</p>
+    <?php endif; ?>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="bookingModal">
+    <div class="modal-content">
+        <button class="close-btn" id="closeModal">X</button>
+        <h2>Book Now</h2>
+        <form method="post" id="bookingForm">
+            <input type="hidden" name="subservice_id" id="modalPackageId" required>
+            <input type="hidden" name="staff_id" id="modalStaffId" required>
+
+            <input type="text" name="subservice_name" id="modalPackageName" readonly required>
+            <input type="text" id="modalStaffName" readonly disabled>
+
+            <input type="text" name="customer_name" placeholder="Your Name" required>
+            <input type="text" name="address" placeholder="Your Address" required>
+            <input type="tel" name="phone" placeholder="Your Phone" pattern="[0-9]{10}" required>
+            <input type="text" name="landmark" placeholder="Landmark (Optional)">
+            <textarea name="note" placeholder="Order Note (Optional)" rows="3"></textarea>
+            <input type="datetime-local" name="booking_datetime" id="bookingDatetime" min="<?php echo date('Y-m-d\TH:i'); ?>" required>
+
+            <button type="submit" name="confirm_booking" class="book-now-btn">Confirm Booking</button>
+        </form>
     </div>
+</div>
 
-    <!-- Modal -->
-    <div class="modal" id="bookingModal">
-        <div class="modal-content">
-            <button class="close-btn" id="closeModal">X</button>
-            <h2>Book Now</h2>
-            <form method="post" id="bookingForm">
-                <input type="hidden" name="package_id" id="modalPackageId">
-                <input type="text" name="package_name" id="modalPackageName" readonly required>
-                <input type="hidden" name="staff_id" id="modalStaffId">
-                <input type="text" name="staff_name" id="modalStaffName" readonly required>
-                <input type="text" name="customer_name" placeholder="Your Name" required>
-                <input type="text" name="address" placeholder="Your Address" required>
-                <input type="tel" name="phone" placeholder="Your Phone" pattern="[0-9]{10}" required>
-                <input type="text" name="landmark" placeholder="Landmark (Optional)">
-                <textarea name="order_note" placeholder="Order Note (Optional)" rows="3"></textarea>
-                <input type="datetime-local" name="booking_datetime" id="bookingDatetime" min="2025-04-26T06:00" max="2025-12-31T21:00" required>
-                <button type="submit" name="book_now" class="book-now-btn">Confirm Booking</button>
-            </form>
-        </div>
-    </div>
+<script>
+    // JavaScript to open modal and fill form fields
+    const modal = document.getElementById('bookingModal');
+    const closeModal = document.getElementById('closeModal');
+    const openBookButtons = document.querySelectorAll('.open-book-now-btn');
 
-    <script>
-        const modal = document.getElementById('bookingModal');
-        const closeModal = document.getElementById('closeModal');
-        const bookButtons = document.querySelectorAll('.book-now-btn');
-
-        bookButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const packageId = this.dataset.packageId;
-                const staffId = this.dataset.staffId;
-                console.log('Opening modal with:', { packageId, staffId }); // Debug
-                if (!packageId || packageId === '0' || isNaN(packageId)) {
-                    alert('Invalid package ID.');
-                    return;
-                }
-                document.getElementById('modalPackageId').value = packageId;
-                document.getElementById('modalPackageName').value = this.dataset.packageName;
-                document.getElementById('modalStaffName').value = this.dataset.staffName;
-                document.getElementById('modalStaffId').value = staffId;
-                modal.style.display = 'flex';
-            });
+    openBookButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            document.getElementById('modalPackageId').value = button.dataset.packageId;
+            document.getElementById('modalStaffId').value = button.dataset.staffId;
+            document.getElementById('modalPackageName').value = button.dataset.packageName;
+            document.getElementById('modalStaffName').value = "Staff: " + button.dataset.staffName;
+            modal.style.display = 'flex';
         });
+    });
 
-        closeModal.addEventListener('click', function() {
+    closeModal.addEventListener('click', () => {
+        modal.style.display = 'none';
+        document.getElementById('bookingForm').reset();
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
             modal.style.display = 'none';
             document.getElementById('bookingForm').reset();
-        });
+        }
+    });
 
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-                document.getElementById('bookingForm').reset();
-            }
-        };
+</script>
 
-        // Validate Datetime Input
-        document.getElementById('bookingDatetime').addEventListener('change', function(e) {
-            const datetime = new Date(e.target.value);
-            const hours = datetime.getHours();
-            const minutes = datetime.getMinutes();
-            if (hours < 6 || hours > 21 || (hours === 21 && minutes > 0)) {
-                alert('Please select a time between 6:00 AM and 9:00 PM.');
-                e.target.value = '';
-            }
-        });
-
-        // Validate Form Submission
-        document.getElementById('bookingForm').addEventListener('submit', function(e) {
-            const packageId = document.getElementById('modalPackageId').value;
-            const datetime = document.getElementById('bookingDatetime').value;
-            console.log('Submitting form with:', { packageId, datetime }); // Debug
-            if (!packageId || packageId === '0' || isNaN(packageId)) {
-                e.preventDefault();
-                alert('Invalid package ID.');
-            }
-            if (!datetime) {
-                e.preventDefault();
-                alert('Please select a valid date and time between 6:00 AM and 9:00 PM.');
-            }
-        });
-
-        // Display success message and redirect
-        <?php if (isset($booking_success)): ?>
-            alert("<?php echo addslashes($booking_success); ?>");
-            window.location.href = '/easy/customer/my_bookings.php';
-        <?php endif; ?>
-    </script>
 </body>
 </html>

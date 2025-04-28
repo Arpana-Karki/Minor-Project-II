@@ -106,26 +106,76 @@ session_start();
         html {
             scroll-behavior: smooth;
         }
+        /* Custom Testimonial Slider */
+        .testimonial-slider {
+            position: relative;
+            overflow: hidden;
+            padding-bottom: 20px;
+        }
+        .slider-container {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .slider-item {
+            flex: 0 0 33.33%;
+            padding: 0 15px;
+            box-sizing: border-box;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        .slider-item.active {
+            opacity: 1;
+        }
+        .slider-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            background: #4f46e5;
+            opacity: 0.5;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .slider-dot.active {
+            opacity: 1;
+        }
+        @media (max-width: 1024px) {
+            .slider-item {
+                flex: 0 0 50%;
+            }
+        }
+        @media (max-width: 640px) {
+            .slider-item {
+                flex: 0 0 100%;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
     
-                <!-- Navbar -->
-<nav class="navbar sticky top-0 z-50">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <a href="index.php" class="text-2xl font-bold text-indigo-600 animate-scale-in">EasyLiving</a>
-        <div class="flex items-center space-x-6">
-            <ul class="flex space-x-6 text-gray-700">
-                <li><a href="index.php" class="nav-link hover:text-indigo-600">Home</a></li>
-                <li><a href="about.html" class="nav-link hover:text-indigo-600">About</a></li>
-                <li><a href="services.php" class="nav-link hover:text-indigo-600">Services</a></li>
-            </ul>
-            <a href="select.php" class="action-btn">
-                <i class="fas fa-sign-in-alt mr-2"></i> Login / Sign Up
-            </a>
+    <!-- Navbar -->
+    <nav class="navbar sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.php" class="text-2xl font-bold text-indigo-600 animate-scale-in">EasyLiving</a>
+            <div class="flex items-center space-x-6">
+                <ul class="flex space-x-6 text-gray-700">
+                    <li><a href="index.php" class="nav-link hover:text-indigo-600">Home</a></li>
+                    <li><a href="about.php" class="nav-link hover:text-indigo-600">About</a></li>
+                    <li><a href="./customer/package.php" class="nav-link hover:text-indigo-600">Packages</a></li>
+                    <li><a href="./customer/subservice.php" class="nav-link hover:text-indigo-600">Services</a></li>
+                </ul>
+                <!-- Login/Signup -->
+                <a href="select.php" class="action-btn">
+                    <i class="fas fa-user-circle mr-2"></i> Login/Signup
+                </a>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
@@ -133,7 +183,7 @@ session_start();
             <div class="md:w-1/2 animate-fade-in-up">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">Your Trusted Service Provider</h1>
                 <p class="text-lg mb-6">Professional services at your doorstep, anytime, anywhere.</p>
-                <a href="services.php" class="bg-yellow-400 text-black px-6 py-3 rounded-full font-semibold hover:bg-yellow-500 transition transform hover:scale-105">Explore Our Services</a>
+                <a href="customer/subservice.php" class="bg-yellow-400 text-black px-6 py-3 rounded-full font-semibold hover:bg-yellow-500 transition transform hover:scale-105">Explore Our Services</a>
             </div>
             <div class="md:w-1/2 mt-8 md:mt-0">
                 <img src="./image/twooPM.jpeg" alt="Hero Image" class="w-3/4 mx-auto rounded-lg shadow-lg">
@@ -151,22 +201,58 @@ session_start();
                     <h3 class="text-xl font-semibold mb-2">Plumbing & Electrician</h3>
                     <p class="text-gray-600 mb-4">Leaky faucets, pipe repairs, wiring, and more – let us handle it!</p>
                     <img src="./image/electric.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
-                    <a href="services.html" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                    <a href="./customer/customer_package.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
                 </div>
                 <div class="service-card bg-gray-50 p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
                     <i class="fas fa-broom text-4xl text-indigo-600 mb-4"></i>
                     <h3 class="text-xl font-semibold mb-2">Home Cleaning & Laundry</h3>
                     <p class="text-gray-600 mb-4">Our professionals will leave your home spotless.</p>
                     <img src="./image/clen.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
-                    <a href="services.html" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                    <a href="./customer/customer_package.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
                 </div>
                 <div class="service-card bg-gray-50 p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
                     <i class="fas fa-paint-roller text-4xl text-indigo-600 mb-4"></i>
                     <h3 class="text-xl font-semibold mb-2">Cook & Decoration</h3>
                     <p class="text-gray-600 mb-4">Professional Decoration services to refresh your space.</p>
                     <img src="./image/cook.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
-                    <a href="services.html" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                    <a href="./customer/customer_package.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Popular Services Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 animate-fade-in-up">Our Popular Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="service-card bg-white p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
+                    <i class="fas fa-wrench text-4xl text-indigo-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Appliance Repair</h3>
+                    <p class="text-gray-600 mb-4">Fix your appliances quickly with our expert technicians.</p>
+                    <img src="./image/appliance.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <a href="./customer/service.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                </div>
+                <div class="service-card bg-white p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
+                    <i class="fas fa-leaf text-4xl text-indigo-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Gardening Services</h3>
+                    <p class="text-gray-600 mb-4">Transform your outdoor space with professional gardening.</p>
+                    <img src="./image/gardening.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <a href="./customer/service.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                </div>
+                <div class="service-card bg-white p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
+                    <i class="fas fa-shield-alt text-4xl text-indigo-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Pest Control</h3>
+                    <p class="text-gray-600 mb-4">Keep your home pest-free with our safe and effective solutions.</p>
+                    <img src="./image/pest.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
+                    <a href="./customer/service.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <a href="./customer/service.php" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105 inline-flex items-center">
+                    <span>Explore More Services</span>
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
             </div>
         </div>
     </section>
@@ -191,7 +277,9 @@ session_start();
                 <div class="bg-white p-6 rounded-lg shadow-md transition transform hover:shadow-lg animate-fade-in-up">
                     <i class="fas fa-thumbs-up text-4xl text-indigo-600 mb-4"></i>
                     <h3 class="text-xl font-semibold mb-2">Quality Assurance</h3>
-                    <p class="text-gray-600 mb-4">We strive for excellence in every service, with your satisfaction as our priority.</p>
+                    <p class="text-gray-σεων
+
+                    600 mb-4">We strive for excellence in every service, with your satisfaction as our priority.</p>
                     <img src="./image/quality.jpeg" alt="Feature Image" class="w-full h-40 object-cover rounded-lg">
                 </div>
             </div>
@@ -201,25 +289,59 @@ session_start();
     <!-- Testimonial Section -->
     <section class="py-16 bg-gray-200">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12 animate-fade-in-up">Client Says About Our Services</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-fade-in-up">
-                    <img src="./image/balen.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
-                    <p class="text-gray-600 mb-4">"Easy Living provides exceptional services! I booked an electrician, and the work was done professionally and on time."</p>
-                    <h3 class="font-semibold">Balen Shah</h3>
-                    <p class="text-gray-500">Mayor of Kathmandu</p>
+            <h2 class="text-3xl font-bold text-center mb-12 animate-fade-in-up">What Our Clients Say About Us</h2>
+            <div class="testimonial-slider">
+                <div class="slider-container" id="testimonialSlider">
+                    <!-- Testimonial 1 -->
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <img src="./image/balen.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"Easy Living provides exceptional services! I booked an electrician, and the work was done professionally and on time."</p>
+                            <h3 class="font-semibold">Balen Shah</h3>
+                            <p class="text-gray-500">Mayor of Kathmandu</p>
+                        </div>
+                    </div>
+                    <!-- Testimonial 2 -->
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <img src="./image/pra.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"Reliable, efficient, and professional! The home cleaning service was outstanding."</p>
+                            <h3 class="font-semibold">Parash Khadka</h3>
+                            <p class="text-gray-500">Former Cricketer</p>
+                        </div>
+                    </div>
+                    <!-- Testimonial 3 -->
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <img src="./image/pri.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"I was impressed by the seamless experience of booking a home cleaning service."</p>
+                            <h3 class="font-semibold">Priyanka Karki</h3>
+                            <p class="text-gray-500">Actress</p>
+                        </div>
+                    </div>
+                    <!-- Testimonial 4 -->
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <img src="./image/client4.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"The plumbing service was top-notch! Quick response and excellent work."</p>
+                            <h3 class="font-semibold">Anita Shrestha</h3>
+                            <p class="text-gray-500">Business Owner</p>
+                        </div>
+                    </div>
+                    <!-- Testimonial 5 -->
+                    <div class="slider-item">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <img src="./image/client5.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"I highly recommend their decoration services. My home looks amazing!"</p>
+                            <h3 class="font-semibold">Ramesh Gurung</h3>
+                            <p class="text-gray-500">Teacher</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-fade-in-up">
-                    <img src="./image/pra.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
-                    <p class="text-gray-600 mb-4">"Reliable, efficient, and professional! The home cleaning service was outstanding."</p>
-                    <h3 class="font-semibold">Parash Khadka</h3>
-                    <p class="text-gray-500">Former Cricketer</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-fade-in-up">
-                    <img src="./image/pri.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
-                    <p class="text-gray-600 mb-4">"I was impressed by the seamless experience of booking a home cleaning service."</p>
-                    <h3 class="font-semibold">Priyanka Karki</h3>
-                    <p class="text-gray-500">Actress</p>
+                <div class="slider-nav">
+                    <div class="slider-dot active" data-index="0"></div>
+                    <div class="slider-dot" data-index="1"></div>
+                    <div class="slider-dot" data-index="2"></div>
                 </div>
             </div>
         </div>
@@ -227,14 +349,12 @@ session_start();
 
     <!-- Call to Action Section -->
     <section class="py-16 bg-indigo-600 text-white text-center">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold mb-4">Ready to Sign Up / Login?</h2>
-        <p class="mb-6 text-lg">Start accessing our premium services by signing up or logging in.</p>
-        <a href="login.php" class="action-btn inline-block text-white font-semibold">
-            <i class="fas fa-user-plus mr-2"></i> Login / Sign Up
-        </a>
-    </div>
-</section>
+        <div class="container mx-auto px-4 animate-fade-in-up">
+            <h2 class="text-3xl font-bold mb-4">Ready to Book?</h2>
+            <p class="text-lg mb-6">Get started with your service request today!</p>
+            <a href="select.php" class="bg-yellow-400 text-black px-6 py-3 rounded-full font-semibold hover:bg-yellow-500 transition transform hover:scale-105">Login/Signup</a>
+        </div>
+    </section>
 
     <!-- Footer Section -->
     <footer class="bg-gray-900 text-gray-300 py-8">
@@ -276,16 +396,50 @@ session_start();
         // Dropdown fix: Keep open on hover
         const dropdown = document.querySelector('.dropdown');
         const dropdownMenu = document.querySelector('.dropdown-menu');
-        dropdown.addEventListener('mouseenter', () => {
-            dropdownMenu.style.display = 'block';
-            dropdownMenu.style.opacity = '1';
-            dropdownMenu.style.transform = 'translateY(0)';
+        if (dropdown && dropdownMenu) {
+            dropdown.addEventListener('mouseenter', () => {
+                dropdownMenu.style.display = 'block';
+                dropdownMenu.style.opacity = '1';
+                dropdownMenu.style.transform = 'translateY(0)';
+            });
+            dropdown.addEventListener('mouseleave', () => {
+                dropdownMenu.style.display = 'none';
+                dropdownMenu.style.opacity = '0';
+                dropdownMenu.style.transform = 'translateY(-10px)';
+            });
+        }
+
+        // Custom Testimonial Slider
+        const sliderContainer = document.getElementById('testimonialSlider');
+        const sliderItems = document.querySelectorAll('.slider-item');
+        const sliderDots = document.querySelectorAll('.slider-dot');
+        let currentIndex = 0;
+
+        function updateSlider() {
+            const offset = currentIndex * -33.33;
+            sliderContainer.style.transform = `translateX(${offset}%)`;
+            sliderItems.forEach((item, index) => {
+                item.classList.toggle('active', index === currentIndex);
+            });
+            sliderDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        sliderDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                currentIndex = parseInt(dot.getAttribute('data-index'));
+                updateSlider();
+            });
         });
-        dropdown.addEventListener('mouseleave', () => {
-            dropdownMenu.style.display = 'none';
-            dropdownMenu.style.opacity = '0';
-            dropdownMenu.style.transform = 'translateY(-10px)';
-        });
+
+        // Auto-slide every 5 seconds
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % 3;
+            updateSlider();
+        }, 5000);
+
+        updateSlider();
     </script>
 </body>
 </html>

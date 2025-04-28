@@ -227,39 +227,60 @@ if ($customer_id) {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             font-family: "Inter", sans-serif;
         }
+
+        
         .navbar {
-            background: #ff6600;
-            padding: 0.75rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .nav-link {
             position: relative;
-            color: white;
-            font-weight: 600;
             transition: color 0.3s ease;
         }
-        .nav-link:hover {
-            color: #ffe6cc;
-        }
         .nav-link::after {
-            content: "";
+            content: '';
             position: absolute;
             width: 0;
             height: 2px;
-            bottom: -4px;
+            bottom: -2px;
             left: 0;
-            background-color: #ffe6cc;
+            background-color: #4f46e5;
             transition: width 0.3s ease;
         }
         .nav-link:hover::after {
             width: 100%;
         }
+        .action-btn {
+            background: linear-gradient(to right, #4f46e5, #7c3aed);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .animate-scale-in {
+            animation: scaleIn 0.5s ease-out forwards;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    
+        /* Hide menu toggle by default */
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+        }
+
+        /* Search Bar Styling */
         .search-box:focus {
-            box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
-            border-color: #ff6600;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+            border-color: #4f46e5;
         }
         .glow-button {
             position: relative;
@@ -289,6 +310,8 @@ if ($customer_id) {
             top: 50%;
             transform: translateY(-50%);
         }
+
+        /* Favorites Button */
         .favorites-button {
             position: absolute;
             top: 0.5rem;
@@ -300,10 +323,10 @@ if ($customer_id) {
             transition: background-color 0.3s;
         }
         .favorites-button.add {
-            background: #ff6600;
+            background: #4f46e5;
         }
         .favorites-button.add:hover {
-            background: #e65c00;
+            background: #4338ca;
         }
         .favorites-button.remove {
             background: #6b7280;
@@ -311,6 +334,8 @@ if ($customer_id) {
         .favorites-button.remove:hover {
             background: #4b5563;
         }
+
+        /* Booking Form */
         .booking-container {
             visibility: hidden;
             opacity: 0;
@@ -360,12 +385,12 @@ if ($customer_id) {
             font-size: 0.875rem;
         }
         .booking-form .confirm-btn {
-            background: #ff6600;
+            background: #4f46e5;
             color: white;
             border: none;
         }
         .booking-form .confirm-btn:hover {
-            background: #e65c00;
+            background: #4338ca;
         }
         .booking-form .close-btn {
             background: #6b7280;
@@ -380,6 +405,8 @@ if ($customer_id) {
             justify-content: space-between;
             gap: 0.5rem;
         }
+
+        /* Swiper Slider */
         .swiper-container {
             max-width: 100%;
             padding: 1rem 0;
@@ -400,39 +427,83 @@ if ($customer_id) {
             color: #333;
         }
         .swiper-button-next, .swiper-button-prev {
-            color: #ff6600;
+            color: #4f46e5;
         }
+
+        /* All Services Link */
         .all-services-link {
             font-size: 1.25rem;
             font-weight: 700;
-            color: #ff6600;
+            color: #4f46e5;
             transition: color 0.3s ease;
         }
         .all-services-link:hover {
-            color: #e65c00;
+            color: #4338ca;
         }
+
+        /* Smooth Scroll */
         html {
             scroll-behavior: smooth;
         }
+
+        /* Error Message */
         .error-message {
             color: #dc2626;
             font-size: 0.875rem;
             margin-bottom: 1rem;
             text-align: center;
         }
+
+        /* Responsive Design for Navbar */
+        @media (max-width: 768px) {
+            .navbar ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #f8f9fa;
+                padding: 1rem;
+            }
+
+            .navbar ul.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen">
     <!-- Navbar -->
-    <nav class="navbar flex justify-between items-center h-12 text-white">
-        <div class="flex space-x-6">
-            <a href="../index.php" class="nav-link text-base">Home</a>
-            <a href="services.php" class="nav-link text-base">Services</a>
-            <a href="../about.php" class="nav-link text-base">About</a>
-            <a href="favorites.php" class="nav-link text-base">Favorites</a>
-            <a href="../profile.php" class="nav-link text-base">My Profile</a>
-            <a href="my_bookings.php" class="nav-link text-base">My Bookings</a>
-            <a href="../customer_logout.php" class="nav-link text-base">Logout</a>
+    <nav class="navbar sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../index.php" class="text-2xl font-bold text-indigo-600 animate-scale-in">EasyLiving</a>
+            <div class="flex items-center space-x-6">
+                <ul class="flex space-x-6 text-gray-700">
+                    <li><a href="../index.php" class="nav-link hover:text-indigo-600">Home</a></li>
+                    <li><a href="../about.php" class="nav-link hover:text-indigo-600">About</a></li>
+                    <li><a href="./package.php" class="nav-link hover:text-indigo-600">Packages</a></li>
+                    <li><a href="./subservice.php" class="nav-link hover:text-indigo-600">Services</a></li>
+                </ul>
+                <!-- Wishlist -->
+                <a href="favorites.php" class="action-btn">
+                    <i class="fas fa-heart mr-2"></i>  Favorites
+                </a>
+                <!-- My Bookings -->
+                <a href="my_bookings.php" class="action-btn">
+                    <i class="fas fa-calendar-check mr-2"></i> My Bookings
+                </a>
+                <!-- My Profile -->
+                <a href="../profile.php" class="action-btn">
+                    <i class="fas fa-user-circle mr-2"></i> My Profile
+                </a>
+                <div class="menu-toggle text-gray-700"><i class="fas fa-bars"></i></div>
+            </div>
         </div>
     </nav>
 
@@ -442,14 +513,14 @@ if ($customer_id) {
             <input
                 type="text"
                 id="searchInput"
-                class="search-box w-full p-3 pr-10 border-2 border-orange-500 rounded-full text-base transition-all duration-300 shadow-md focus:outline-none bg-white/80"
+                class="search-box w-full p-3 pr-10 border-2 border-indigo-600 rounded-full text-base transition-all duration-300 shadow-md focus:outline-none bg-white/80"
                 placeholder="Search for sub-services..."
                 value="<?php echo htmlspecialchars($search); ?>"
                 oninput="searchServices()"
             />
             <button
                 onclick="document.getElementById('searchForm').submit();"
-                class="search-button p-2 bg-orange-500 text-white rounded-full text-base cursor-pointer hover:bg-orange-600 hover:scale-110 transition-all duration-300"
+                class="search-button p-2 bg-indigo-600 text-white rounded-full text-base cursor-pointer hover:bg-indigo-700 hover:scale-110 transition-all duration-300"
             >
                 🔍
             </button>
@@ -483,7 +554,7 @@ if ($customer_id) {
     </div>
 
     <!-- Sub-Services Section -->
-    <h2 class="text-3xl font-bold my-8 text-orange-600 text-center">Our Sub-Services</h2>
+    <h2 class="text-3xl font-bold my-8 text-indigo-600 text-center">Our Sub-Services</h2>
     <div class="flex flex-wrap justify-center gap-6 px-4">
         <?php if (empty($subservices)): ?>
             <p class="text-base text-gray-600">No sub-services found. Try adjusting your search or selecting a different category.</p>
@@ -502,7 +573,7 @@ if ($customer_id) {
                         </button>
                     </form>
                     <h3 class="mt-3 text-lg font-semibold text-gray-800">
-                        <a href="javascript:void(0)" onclick="goToStaffProfile(<?php echo $subservice['first_staff_id']; ?>)" class="text-orange-600 hover:underline">
+                        <a href="javascript:void(0)" onclick="goToStaffProfile(<?php echo $subservice['first_staff_id']; ?>)" class="text-indigo-600 hover:underline">
                             <?php echo htmlspecialchars($subservice['subservice_name']); ?>
                         </a>
                     </h3>
@@ -517,7 +588,7 @@ if ($customer_id) {
                             $ids = explode(',', $subservice['staff_ids']);
                             foreach ($names as $index => $name) {
                                 $staff_id = $ids[$index];
-                                echo '<a href="../admin/staff_profile.php?id=' . htmlspecialchars($staff_id) . '" class="text-orange-600 hover:underline">' . htmlspecialchars($name) . '</a>';
+                                echo '<a href="../admin/staff_profile.php?id=' . htmlspecialchars($staff_id) . '" class="text-indigo-600 hover:underline">' . htmlspecialchars($name) . '</a>';
                                 if ($index < count($names) - 1) echo ', ';
                             }
                         } else {
@@ -529,7 +600,7 @@ if ($customer_id) {
                         <strong>Price:</strong> Rs <?php echo number_format($subservice['amount'], 2); ?>
                     </p>
                     <button
-                        class="glow-button mt-3 text-base font-semibold bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 w-full"
+                        class="glow-button mt-3 text-base font-semibold bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 w-full"
                         onclick="openBookingForm(<?php echo $subservice['id']; ?>, '<?php echo htmlspecialchars(addslashes($subservice['subservice_name'])); ?>', '<?php echo htmlspecialchars(addslashes($subservice['first_staff_name'])); ?>', <?php echo $subservice['first_staff_id']; ?>)"
                     >
                         Book Now
@@ -545,7 +616,7 @@ if ($customer_id) {
             <?php if ($booking_error): ?>
                 <div class="error-message"><?php echo htmlspecialchars($booking_error); ?></div>
             <?php endif; ?>
-            <h2 class="text-xl font-bold text-orange-600 mb-3">Book Service</h2>
+            <h2 class="text-xl font-bold text-indigo-600 mb-3">Book Service</h2>
             <form method="POST" action="/easy/customer/subservice.php">
                 <input type="hidden" name="subservice_id" id="subserviceId">
                 <input type="hidden" name="staff_id" id="staffId">
@@ -698,6 +769,15 @@ if ($customer_id) {
                 alert('Please select a valid date and time between 6:00 AM and 9:00 PM.');
             }
         });
+
+        // Mobile Menu Toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navMenu = document.querySelector('.navbar ul');
+        if (menuToggle && navMenu) {
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+        }
     </script>
 </body>
 </html>

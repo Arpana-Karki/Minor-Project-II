@@ -78,36 +78,57 @@ $error = isset($error) ? $error : '';
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             font-family: "Inter", sans-serif;
         }
+
+        /* Navbar Styling */
         .navbar {
-            background: #ff6600;
-            padding: 0.75rem 1.5rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .nav-link {
             position: relative;
-            color: white;
-            font-weight: 600;
             transition: color 0.3s ease;
-        }
-        .nav-link:hover {
-            color: #ffe6cc;
+            font-size: 1rem;
         }
         .nav-link::after {
-            content: "";
+            content: '';
             position: absolute;
             width: 0;
             height: 2px;
-            bottom: -4px;
+            bottom: -2px;
             left: 0;
-            background-color: #ffe6cc;
+            background-color: #4f46e5;
             transition: width 0.3s ease;
         }
         .nav-link:hover::after {
             width: 100%;
         }
+        .action-btn {
+            background: linear-gradient(to right, #4f46e5, #7c3aed);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .animate-scale-in {
+            animation: scaleIn 0.5s ease-out forwards;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+        }
+
+        /* Table Styling */
         .table-container {
             max-width: 90%;
             margin: 2rem auto;
@@ -126,7 +147,7 @@ $error = isset($error) ? $error : '';
             border-bottom: 1px solid #e5e7eb;
         }
         th {
-            background: #ff6600;
+            background: #4f46e5;
             color: white;
             font-weight: 600;
         }
@@ -159,25 +180,63 @@ $error = isset($error) ? $error : '';
             margin-bottom: 1rem;
             text-align: center;
         }
+
+        /* Responsive Design for Navbar */
+        @media (max-width: 768px) {
+            .navbar ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #f8f9fa;
+                padding: 1rem;
+            }
+
+            .navbar ul.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen">
     <!-- Navbar -->
-    <nav class="navbar flex justify-between items-center h-12 text-white">
-        <div class="flex space-x-6">
-            <a href="../index.php" class="nav-link text-base">Home</a>
-            <a href="services.php" class="nav-link text-base">Services</a>
-            <a href="../about.php" class="nav-link text-base">About</a>
-            <a href="favorites.php" class="nav-link text-base">Favorites</a>
-            <a href="../profile.php" class="nav-link text-base">My Profile</a>
-            <a href="my_bookings.php" class="nav-link text-base">My Bookings</a>
-            <a href="../customer_logout.php" class="nav-link text-base">Logout</a>
+    <nav class="navbar sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../index.php" class="text-2xl font-bold text-indigo-600 animate-scale-in">EasyLiving</a>
+            <div class="flex items-center space-x-6">
+                <ul class="flex space-x-6 text-gray-700">
+                    <li><a href="../index.php" class="nav-link hover:text-indigo-600">Home</a></li>
+                    <li><a href="../about.php" class="nav-link hover:text-indigo-600">About</a></li>
+                    <li><a href="./favorites.php" class="nav-link hover:text-indigo-600">Packages</a></li>
+                    <li><a href="./subservice.php" class="nav-link hover:text-indigo-600">Services</a></li>
+                </ul>
+                <!-- Wishlist -->
+                <a href="favorites.php" class="action-btn">
+                    <i class="fas fa-heart mr-2"></i> Favorites
+                </a>
+                <!-- My Bookings -->
+                <a href="my_bookings.php" class="action-btn">
+                    <i class="fas fa-calendar-check mr-2"></i> My Bookings
+                </a>
+                <!-- My Profile -->
+                <a href="../profile.php" class="action-btn">
+                    <i class="fas fa-user-circle mr-2"></i> My Profile
+                </a>
+                <div class="menu-toggle text-gray-700"><i class="fas fa-bars"></i></div>
+            </div>
         </div>
     </nav>
 
     <!-- Bookings Section -->
     <div class="table-container">
-        <h2 class="text-2xl font-bold text-orange-600 mb-4 text-center">My Bookings</h2>
+        <h2 class="text-2xl font-bold text-indigo-600 mb-4 text-center">My Bookings</h2>
         <?php if ($error): ?>
             <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
@@ -229,6 +288,15 @@ $error = isset($error) ? $error : '';
         <?php if ($message): ?>
             alert("<?php echo addslashes($message); ?>");
         <?php endif; ?>
+
+        // Mobile Menu Toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navMenu = document.querySelector('.navbar ul');
+        if (menuToggle && navMenu) {
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+        }
     </script>
 </body>
 </html>
