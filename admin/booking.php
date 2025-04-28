@@ -5,14 +5,6 @@ if (!isset($_SESSION['admin_email'])) {
     exit();
 }
 include('../db_connection.php');
-
-// Handle cancellation
-if (isset($_GET['cancel'])) {
-    $cancel_id = intval($_GET['cancel']);
-    mysqli_query($conn, "UPDATE bookings SET status = 'Cancelled' WHERE id = $cancel_id");
-    header("Location: booking.php");
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
@@ -80,20 +72,6 @@ if (isset($_GET['cancel'])) {
             background-color: #f2f2f2;
         }
 
-        .btn-cancel {
-            background-color: #e74c3c;
-            color: white;
-            padding: 6px 10px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .btn-cancel:hover {
-            background-color: #c0392b;
-        }
-
         .status {
             padding: 5px 10px;
             border-radius: 5px;
@@ -130,12 +108,10 @@ if (isset($_GET['cancel'])) {
                     <th>Address</th>
                     <th>Phone</th>
                     <th>Landmark</th>
-                    <th>Email</th>
                     <th>Note</th>
                     <th>Date</th>
                     <th>Time</th>
                     <th>Status</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -144,26 +120,17 @@ if (isset($_GET['cancel'])) {
                 while ($row = mysqli_fetch_assoc($result)) {
                     $statusClass = $row['status'] === 'Cancelled' ? 'cancelled' : 'pending';
                     echo "<tr>
-                        <td>{$row['service']}</td>
+                        <td>{$row['subservice_name']}</td>
                         <td>{$row['staff_name']}</td>
                         <td>{$row['customer_name']}</td>
                         <td>{$row['address']}</td>
                         <td>{$row['phone']}</td>
                         <td>{$row['landmark']}</td>
-                        <td>{$row['email']}</td>
-                        <td>{$row['order_note']}</td>
+                        <td>{$row['note']}</td>
                         <td>{$row['booking_date']}</td>
                         <td>{$row['booking_time']}</td>
                         <td><span class='status $statusClass'>{$row['status']}</span></td>
-                        <td>";
-                        if ($row['status'] !== 'Cancelled') {
-                            echo "<a href='booking.php?cancel={$row['id']}' onclick='return confirm(\"Are you sure you want to cancel this booking?\");'>
-                                    <button class='btn-cancel'>Cancel</button>
-                                  </a>";
-                        } else {
-                            echo "-";
-                        }
-                    echo "</td></tr>";
+                    </tr>";
                 }
                 ?>
             </tbody>

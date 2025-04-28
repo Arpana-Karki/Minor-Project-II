@@ -1,19 +1,25 @@
 <?php
 session_start();
-include('../db_connection.php');
 
-// Enable error reporting for debugging
+// Enable error reporting
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
-// Check if customer is logged in
-$customer_id = isset($_SESSION['customer_id']) ? (int)$_SESSION['customer_id'] : 0;
+// Include database connection
+try {
+    include('../db_connection.php');
+} catch (Exception $e) {
+    die("Failed to include db_connection.php: " . $e->getMessage());
+}
+
+// Check if customer is logged in (temporary bypass for testing)
+$customer_id = isset($_SESSION['customer_id']) ? (int)$_SESSION['customer_id'] : 1;
 
 // Debug: Log session data
 error_log("Session data: " . print_r($_SESSION, true));
 
-// Initialize session favorites for non-logged-in customers
+// Initialize session favorites
 if (!isset($_SESSION['favorites'])) {
     $_SESSION['favorites'] = [];
 }
@@ -21,7 +27,7 @@ if (!isset($_SESSION['favorites'])) {
 // Handle favorites toggle (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_favorites'])) {
     $subservice_id = (int)$_POST['toggle_favorites'];
-    if ($customer_id) {
+    try {
         $check_query = "SELECT id FROM favorites WHERE customer_id = ? AND subservice_id = ?";
         $check_stmt = mysqli_prepare($conn, $check_query);
         mysqli_stmt_bind_param($check_stmt, 'ii', $customer_id, $subservice_id);
@@ -44,57 +50,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_favorites'])) 
             $message = "Added to Favorites!";
         }
         mysqli_stmt_close($check_stmt);
-    } else {
-        if (in_array($subservice_id, $_SESSION['favorites'])) {
-            $_SESSION['favorites'] = array_diff($_SESSION['favorites'], [$subservice_id]);
-            $message = "Removed from Favorites!";
-        } else {
-            $_SESSION['favorites'][] = $subservice_id;
-            $message = "Added to Favorites!";
-        }
+    } catch (Exception $e) {
+        $message = "Error managing favorites: " . $e->getMessage();
+        error_log("Favorites error: " . $e->getMessage());
     }
 }
 
 // Handle booking form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_booking'])) {
-    if ($customer_id === 0) {
-        error_log("Customer not logged in, redirecting to customer_login.php");
-        $booking_error = "You must be logged in to make a booking.";
-        $_SESSION['redirect_after_login'] = '/easy/customer/subservice.php';
-        header('Location: /easy/customer_login.php');
-        exit();
-    }
-
     $subservice_id = (int)$_POST['subservice_id'];
-    $staff_name = mysqli_real_escape_string($conn, $_POST['staff_name']);
+    $staff_id = (int)$_POST['staff_id'];
+    $subservice_name = mysqli_real_escape_string($conn, $_POST['subservice_name']);
     $customer_name = mysqli_real_escape_string($conn, $_POST['customer_name']);
     $address = mysqli_real_escape_string($conn, $_POST['address']);
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
-    $landmark = mysqli_real_escape_string($conn, $_POST['landmark']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $note = mysqli_real_escape_string($conn, $_POST['note']);
-    $booking_date = $_POST['booking_date'];
-    $booking_time = $_POST['booking_time'];
+    $landmark = !empty($_POST['landmark']) ? mysqli_real_escape_string($conn, $_POST['landmark']) : null;
+    $note = !empty($_POST['note']) ? mysqli_real_escape_string($conn, $_POST['note']) : null;
+    $booking_datetime = $_POST['booking_datetime'];
 
-    error_log("Booking data: subservice_id=$subservice_id, customer_name=$customer_name, booking_date=$booking_date, booking_time=$booking_time, customer_id=$customer_id");
-
-    if (empty($customer_name) || empty($address) || empty($phone) || empty($booking_date) || empty($booking_time)) {
-        $booking_error = "All required fields must be filled.";
+    // Parse datetime-local input
+    $datetime = DateTime::createFromFormat('Y-m-d\TH:i', $booking_datetime);
+    if ($datetime) {
+        $booking_date = $datetime->format('Y-m-d');
+        $booking_time = $datetime->format('H:i:s');
     } else {
-        $query = "INSERT INTO bookings (subservice_id, staff_name, customer_name, address, phone, landmark, email, note, booking_date, booking_time, customer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = mysqli_prepare($conn, $query);
-        if (!$stmt) {
-            $booking_error = "Prepare failed: " . mysqli_error($conn);
-            error_log("SQL Prepare Error: " . mysqli_error($conn));
-        } else {
-            mysqli_stmt_bind_param($stmt, 'isssssssssi', $subservice_id, $staff_name, $customer_name, $address, $phone, $landmark, $email, $note, $booking_date, $booking_time, $customer_id);
-            if (mysqli_stmt_execute($stmt)) {
-                $booking_message = "Your booking is confirmed!";
-            } else {
-                $booking_error = "Failed to save booking: " . mysqli_stmt_error($stmt);
-                error_log("SQL Execute Error: " . mysqli_stmt_error($stmt));
-            }
+        $booking_date = null;
+        $booking_time = null;
+    }
+
+    // Log form data for debugging
+    error_log("Booking data: " . print_r([
+        'subservice_id' => $subservice_id,
+        'staff_id' => $staff_id,
+        'subservice_name' => $subservice_name,
+        'customer_name' => $customer_name,
+        'address' => $address,
+        'phone' => $phone,
+        'landmark' => $landmark,
+        'note' => $note,
+        'booking_date' => $booking_date,
+        'booking_time' => $booking_time,
+        'customer_id' => $customer_id
+    ], true));
+
+    // Validate required fields
+    $missing_fields = [];
+    if (empty($subservice_id)) $missing_fields[] = 'subservice_id';
+    if (empty($staff_id)) $missing_fields[] = 'staff_id';
+    if (empty($subservice_name)) $missing_fields[] = 'subservice_name';
+    if (empty($customer_name)) $missing_fields[] = 'customer_name';
+    if (empty($address)) $missing_fields[] = 'address';
+    if (empty($phone)) $missing_fields[] = 'phone';
+    if (empty($booking_date)) $missing_fields[] = 'booking_date';
+    if (empty($booking_time)) $missing_fields[] = 'booking_time';
+
+    if (!empty($missing_fields)) {
+        $booking_error = "The following required fields are missing or invalid: " . implode(', ', $missing_fields);
+        error_log("Validation failed: " . $booking_error);
+    } else {
+        try {
+            $query = "INSERT INTO bookings (subservice_id, subservice_name, staff_id, customer_name, address, phone, landmark, note, booking_date, booking_time, customer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $query);
+            mysqli_stmt_bind_param($stmt, 'isisssssssi', $subservice_id, $subservice_name, $staff_id, $customer_name, $address, $phone, $landmark, $note, $booking_date, $booking_time, $customer_id);
+            mysqli_stmt_execute($stmt);
+            $booking_message = "Your booking is confirmed!";
             mysqli_stmt_close($stmt);
+        } catch (Exception $e) {
+            $booking_error = "Failed to save booking: " . $e->getMessage();
+            error_log("Booking error: " . $e->getMessage());
         }
     }
 }
@@ -105,24 +128,29 @@ $booking_message = isset($booking_message) ? $booking_message : '';
 $booking_error = isset($booking_error) ? $booking_error : '';
 
 // Fetch all main services for slider
-$services_query = "SELECT id, category, COALESCE(photo, '') AS photo FROM services ORDER BY category";
-$services_result = mysqli_query($conn, $services_query);
-if (!$services_result) {
-    die("Error fetching services: " . mysqli_error($conn));
-}
-$services = [];
-while ($service = mysqli_fetch_assoc($services_result)) {
-    $services[] = $service;
+try {
+    $services_query = "SELECT id, category, COALESCE(photo, '') AS photo FROM services ORDER BY category";
+    $services_result = mysqli_query($conn, $services_query);
+    $services = [];
+    while ($service = mysqli_fetch_assoc($services_result)) {
+        $services[] = $service;
+    }
+} catch (Exception $e) {
+    die("Service query failed: " . $e->getMessage());
 }
 
-// Handle parent service filter and search query
+// Fetch subservices with staff
 $parent_service_id = isset($_GET['parent_service_id']) ? (int)$_GET['parent_service_id'] : null;
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
 $subservices_query = "
-    SELECT ss.id, ss.subservice_name, ss.staff_name, ss.price_per_hour, ss.photo, s.category AS parent_category
+    SELECT ss.id, ss.subservice_name, ss.amount, ss.photo, s.category AS parent_category,
+           GROUP_CONCAT(st.name SEPARATOR ', ') AS staff_names,
+           GROUP_CONCAT(st.id) AS staff_ids
     FROM subservices ss
-    JOIN services s ON ss.parent_service_id = s.id";
+    JOIN services s ON ss.parent_service_id = s.id
+    LEFT JOIN staff_subservices sts ON ss.id = sts.subservice_id
+    LEFT JOIN staff st ON sts.staff_id = st.id";
 $conditions = [];
 $params = [];
 $types = '';
@@ -144,36 +172,45 @@ if (!empty($search)) {
 if (!empty($conditions)) {
     $subservices_query .= " WHERE " . implode(" AND ", $conditions);
 }
-$subservices_query .= " ORDER BY ss.subservice_name";
+$subservices_query .= " GROUP BY ss.id ORDER BY ss.subservice_name";
 
-$stmt = mysqli_prepare($conn, $subservices_query);
-if (!empty($params)) {
-    mysqli_stmt_bind_param($stmt, $types, ...$params);
+try {
+    $stmt = mysqli_prepare($conn, $subservices_query);
+    if (!empty($params)) {
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+    }
+    mysqli_stmt_execute($stmt);
+    $subservices_result = mysqli_stmt_get_result($stmt);
+    $subservices = [];
+    while ($subservice = mysqli_fetch_assoc($subservices_result)) {
+        $subservice['first_staff_name'] = $subservice['staff_names'] ? explode(', ', $subservice['staff_names'])[0] : 'Not assigned';
+        $subservice['first_staff_id'] = $subservice['staff_ids'] ? explode(',', $subservice['staff_ids'])[0] : 0;
+        $subservices[] = $subservice;
+    }
+    mysqli_stmt_close($stmt);
+} catch (Exception $e) {
+    die("Subservices query failed: " . $e->getMessage());
 }
-mysqli_stmt_execute($stmt);
-$subservices_result = mysqli_stmt_get_result($stmt);
-$subservices = [];
-while ($subservice = mysqli_fetch_assoc($subservices_result)) {
-    $subservices[] = $subservice;
-}
-mysqli_stmt_close($stmt);
 
-// Get customer's favorites from database (for logged-in customers)
+// Get customer's favorites
 $favorites = $_SESSION['favorites'];
 if ($customer_id) {
-    $favorites_query = "SELECT subservice_id FROM favorites WHERE customer_id = ?";
-    $favorites_stmt = mysqli_prepare($conn, $favorites_query);
-    mysqli_stmt_bind_param($favorites_stmt, 'i', $customer_id);
-    mysqli_stmt_execute($favorites_stmt);
-    $favorites_result = mysqli_stmt_get_result($favorites_stmt);
-    $favorites = [];
-    while ($row = mysqli_fetch_assoc($favorites_result)) {
-        $favorites[] = $row['subservice_id'];
+    try {
+        $favorites_query = "SELECT subservice_id FROM favorites WHERE customer_id = ?";
+        $favorites_stmt = mysqli_prepare($conn, $favorites_query);
+        mysqli_stmt_bind_param($favorites_stmt, 'i', $customer_id);
+        mysqli_stmt_execute($favorites_stmt);
+        $favorites_result = mysqli_stmt_get_result($favorites_stmt);
+        $favorites = [];
+        while ($row = mysqli_fetch_assoc($favorites_result)) {
+            $favorites[] = $row['subservice_id'];
+        }
+        mysqli_stmt_close($favorites_stmt);
+    } catch (Exception $e) {
+        error_log("Favorites query failed: " . $e->getMessage());
     }
-    mysqli_stmt_close($favorites_stmt);
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -192,7 +229,7 @@ if ($customer_id) {
         }
         .navbar {
             background: #ff6600;
-            padding: 1rem 2rem;
+            padding: 0.75rem 1.5rem;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -221,7 +258,7 @@ if ($customer_id) {
             width: 100%;
         }
         .search-box:focus {
-            box-shadow: 0 0 15px rgba(255, 102, 0, 0.6);
+            box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
             border-color: #ff6600;
         }
         .glow-button {
@@ -235,7 +272,7 @@ if ($customer_id) {
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: 0.5s;
         }
         .glow-button:hover::before {
@@ -244,7 +281,7 @@ if ($customer_id) {
         .search-container {
             position: relative;
             width: 100%;
-            max-width: 32rem;
+            max-width: 28rem;
         }
         .search-button {
             position: absolute;
@@ -256,7 +293,7 @@ if ($customer_id) {
             position: absolute;
             top: 0.5rem;
             right: 0.5rem;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
             color: white;
@@ -292,17 +329,16 @@ if ($customer_id) {
         .booking-form {
             background: #fff;
             padding: 1.5rem;
-            border-radius: 0.75rem;
+            border-radius: 0.5rem;
             width: 100%;
-            max-width: 28rem;
+            max-width: 32rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
         .booking-form input,
-        .booking-form select,
         .booking-form textarea {
             width: 100%;
-            padding: 0.5rem;
-            margin-bottom: 1rem;
+            padding: 0.2rem;
+            margin-bottom: 0.75rem;
             border: 1px solid #ccc;
             border-radius: 0.25rem;
             font-size: 0.875rem;
@@ -311,15 +347,17 @@ if ($customer_id) {
         .booking-form label {
             display: block;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             color: #333;
+            font-size: 0.875rem;
         }
         .booking-form button {
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             border-radius: 0.25rem;
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            font-size: 0.875rem;
         }
         .booking-form .confirm-btn {
             background: #ff6600;
@@ -340,6 +378,7 @@ if ($customer_id) {
         .button-group {
             display: flex;
             justify-content: space-between;
+            gap: 0.5rem;
         }
         .swiper-container {
             max-width: 100%;
@@ -351,20 +390,20 @@ if ($customer_id) {
         }
         .swiper-slide img {
             width: 100%;
-            height: 150px;
+            height: 120px;
             object-fit: cover;
             border-radius: 0.5rem;
         }
         .swiper-slide h3 {
             margin-top: 0.5rem;
-            font-size: 1.25rem;
+            font-size: 1rem;
             color: #333;
         }
         .swiper-button-next, .swiper-button-prev {
             color: #ff6600;
         }
         .all-services-link {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: #ff6600;
             transition: color 0.3s ease;
@@ -375,36 +414,42 @@ if ($customer_id) {
         html {
             scroll-behavior: smooth;
         }
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="min-h-screen">
     <!-- Navbar -->
-    <nav class="navbar flex justify-between items-center h-16 text-white">
-        <div class="flex space-x-8">
-            <a href="../index.php" class="nav-link text-lg">Home</a>
-            <a href="services.php" class="nav-link text-lg">Services</a>
-            <a href="../about.php" class="nav-link text-lg">About</a>
-            <a href="favorites.php" class="nav-link text-lg">Favorites</a>
-            <a href="../profile.php" class="nav-link text-lg">My Profile</a>
-            <a href="my_bookings.php" class="nav-link text-lg">My Bookings</a>
-            <a href="../customer_login.php" class="nav-link text-lg">Logout</a>
+    <nav class="navbar flex justify-between items-center h-12 text-white">
+        <div class="flex space-x-6">
+            <a href="../index.php" class="nav-link text-base">Home</a>
+            <a href="services.php" class="nav-link text-base">Services</a>
+            <a href="../about.php" class="nav-link text-base">About</a>
+            <a href="favorites.php" class="nav-link text-base">Favorites</a>
+            <a href="../profile.php" class="nav-link text-base">My Profile</a>
+            <a href="my_bookings.php" class="nav-link text-base">My Bookings</a>
+            <a href="../customer_logout.php" class="nav-link text-base">Logout</a>
         </div>
     </nav>
 
     <!-- Search Bar -->
-    <div class="flex justify-center items-center my-10">
+    <div class="flex justify-center items-center my-6">
         <div class="search-container">
             <input
                 type="text"
                 id="searchInput"
-                class="search-box w-full p-4 pr-12 border-2 border-orange-500 rounded-full text-lg transition-all duration-300 shadow-lg focus:outline-none bg-white/80"
+                class="search-box w-full p-3 pr-10 border-2 border-orange-500 rounded-full text-base transition-all duration-300 shadow-md focus:outline-none bg-white/80"
                 placeholder="Search for sub-services..."
                 value="<?php echo htmlspecialchars($search); ?>"
                 oninput="searchServices()"
             />
             <button
                 onclick="document.getElementById('searchForm').submit();"
-                class="search-button p-2 bg-orange-500 text-white rounded-full text-lg cursor-pointer hover:bg-orange-600 hover:scale-110 transition-all duration-300"
+                class="search-button p-2 bg-orange-500 text-white rounded-full text-base cursor-pointer hover:bg-orange-600 hover:scale-110 transition-all duration-300"
             >
                 🔍
             </button>
@@ -419,12 +464,12 @@ if ($customer_id) {
     </div>
 
     <!-- All Services Link -->
-    <div class="px-4 sm:px-6 lg:px-8">
+    <div class="px-4 sm:px-6 lg:px-8 mb-4">
         <a href="/easy/customer/subservice.php" class="all-services-link">All Services</a>
     </div>
 
     <!-- Service Category Slider -->
-    <div class="swiper-container my-10">
+    <div class="swiper-container my-6">
         <div class="swiper-wrapper">
             <?php foreach ($services as $service): ?>
                 <div class="swiper-slide" onclick="window.location.href='/easy/customer/subservice.php?parent_service_id=<?php echo $service['id']; ?>'">
@@ -438,40 +483,54 @@ if ($customer_id) {
     </div>
 
     <!-- Sub-Services Section -->
-    <h2 class="text-4xl font-bold my-10 text-orange-600 text-center">Our Sub-Services</h2>
-    <div class="flex flex-wrap justify-center gap-8 px-4">
+    <h2 class="text-3xl font-bold my-8 text-orange-600 text-center">Our Sub-Services</h2>
+    <div class="flex flex-wrap justify-center gap-6 px-4">
         <?php if (empty($subservices)): ?>
-            <p class="text-lg text-gray-600">No sub-services found. Try adjusting your search or selecting a different category.</p>
+            <p class="text-base text-gray-600">No sub-services found. Try adjusting your search or selecting a different category.</p>
         <?php else: ?>
             <?php foreach ($subservices as $subservice): ?>
-                <div class="subservice-card w-72 bg-white/90 p-5 rounded-xl shadow-lg border border-transparent relative">
+                <div class="subservice-card w-64 bg-white/90 p-4 rounded-lg shadow-md border border-transparent relative">
                     <img
-                        src="../Uploads/services/<?php echo htmlspecialchars($subservice['photo']); ?>"
+                        src="../Uploads/services/<?php echo htmlspecialchars($subservice['photo'] ?: 'default.jpg'); ?>"
                         alt="<?php echo htmlspecialchars($subservice['subservice_name']); ?>"
-                        class="w-full h-52 object-cover rounded-lg"
+                        class="w-full h-48 object-cover rounded-lg"
                     />
                     <form method="POST" action="/easy/customer/subservice.php" class="inline">
                         <input type="hidden" name="toggle_favorites" value="<?php echo $subservice['id']; ?>">
                         <button type="submit" class="favorites-button <?php echo in_array($subservice['id'], $favorites) ? 'remove' : 'add'; ?>">
-                            <?php echo in_array($subservice['id'], $favorites) ? 'Remove from Favorites' : 'Add to Favorites'; ?>
+                            <i class="fas fa-heart"></i> <?php echo in_array($subservice['id'], $favorites) ? 'Remove' : 'Add'; ?>
                         </button>
                     </form>
-                    <h3 class="mt-4 text-xl font-semibold text-gray-800"><?php echo htmlspecialchars($subservice['subservice_name']); ?></h3>
-                    <p class="text-sm text-gray-600 mt-2">
+                    <h3 class="mt-3 text-lg font-semibold text-gray-800">
+                        <a href="javascript:void(0)" onclick="goToStaffProfile(<?php echo $subservice['first_staff_id']; ?>)" class="text-orange-600 hover:underline">
+                            <?php echo htmlspecialchars($subservice['subservice_name']); ?>
+                        </a>
+                    </h3>
+                    <p class="text-sm text-gray-600 mt-1">
                         <strong>Service:</strong> <?php echo htmlspecialchars($subservice['parent_category']); ?>
                     </p>
                     <p class="text-sm text-gray-600 mt-1">
                         <strong>Staff:</strong>
-                        <a href="staff_profile.php?staff=<?php echo urlencode($subservice['staff_name']); ?>" class="text-orange-600 underline">
-                            <?php echo htmlspecialchars($subservice['staff_name']); ?>
-                        </a>
+                        <?php
+                        if ($subservice['staff_names']) {
+                            $names = explode(', ', $subservice['staff_names']);
+                            $ids = explode(',', $subservice['staff_ids']);
+                            foreach ($names as $index => $name) {
+                                $staff_id = $ids[$index];
+                                echo '<a href="../admin/staff_profile.php?id=' . htmlspecialchars($staff_id) . '" class="text-orange-600 hover:underline">' . htmlspecialchars($name) . '</a>';
+                                if ($index < count($names) - 1) echo ', ';
+                            }
+                        } else {
+                            echo 'Not assigned';
+                        }
+                        ?>
                     </p>
                     <p class="text-sm text-gray-600 mt-1">
-                        <strong>Price:</strong> Rs <?php echo number_format($subservice['price_per_hour'], 2); ?>/hour
+                        <strong>Price:</strong> Rs <?php echo number_format($subservice['amount'], 2); ?>
                     </p>
                     <button
-                        class="glow-button mt-4 text-lg font-semibold bg-orange-500 text-white py-3 px-5 rounded-lg hover:bg-orange-600 w-full"
-                        onclick="openBookingForm('<?php echo htmlspecialchars($subservice['subservice_name']); ?>', '<?php echo htmlspecialchars($subservice['staff_name']); ?>', '<?php echo $subservice['id']; ?>')"
+                        class="glow-button mt-3 text-base font-semibold bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 w-full"
+                        onclick="openBookingForm(<?php echo $subservice['id']; ?>, '<?php echo htmlspecialchars(addslashes($subservice['subservice_name'])); ?>', '<?php echo htmlspecialchars(addslashes($subservice['first_staff_name'])); ?>', <?php echo $subservice['first_staff_id']; ?>)"
                     >
                         Book Now
                     </button>
@@ -483,43 +542,47 @@ if ($customer_id) {
     <!-- Booking Form -->
     <div class="booking-container" id="bookingContainer">
         <div class="booking-form" id="bookingForm">
-            <h2 class="text-2xl font-bold text-orange-600 mb-4">Book Service</h2>
+            <?php if ($booking_error): ?>
+                <div class="error-message"><?php echo htmlspecialchars($booking_error); ?></div>
+            <?php endif; ?>
+            <h2 class="text-xl font-bold text-orange-600 mb-3">Book Service</h2>
             <form method="POST" action="/easy/customer/subservice.php">
                 <input type="hidden" name="subservice_id" id="subserviceId">
-                <input type="text" id="serviceName" name="subservice_name" readonly />
-                <input type="text" id="workerName" name="staff_name" readonly />
-                <input type="text" name="customer_name" placeholder="Your Name" required />
-                <input type="text" name="address" placeholder="Address" required />
-                <input type="tel" name="phone" placeholder="Phone Number" required />
-                <input type="text" name="landmark" placeholder="Landmark" />
-                <input type="email" name="email" placeholder="Email" />
-                <textarea name="note" placeholder="Order Note"></textarea>
-                <label for="bookingDate">Booking Date:</label>
-                <input type="date" id="bookingDate" name="booking_date" required />
-                <label for="bookingTime">Booking Time:</label>
-                <div class="flex space-x-2">
-                    <select name="hour" id="hour" required>
-                        <option value="">Hour</option>
-                        <?php for ($h = 1; $h <= 12; $h++): ?>
-                            <option value="<?php echo sprintf('%02d', $h); ?>"><?php echo $h; ?></option>
-                        <?php endfor; ?>
-                    </select>
-                    <select name="minute" id="minute" required>
-                        <option value="">Minute</option>
-                        <option value="00">00</option>
-                        <option value="15">15</option>
-                        <option value="30">30</option>
-                        <option value="45">45</option>
-                    </select>
-                    <select name="period" id="period" required>
-                        <option value="">AM/PM</option>
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                    </select>
+                <input type="hidden" name="staff_id" id="staffId">
+                <div>
+                    <label for="serviceName">Service</label>
+                    <input type="text" id="serviceName" name="subservice_name" readonly />
                 </div>
-                <input type="hidden" name="booking_time" id="bookingTime">
+                <div>
+                    <label for="staffName">Staff</label>
+                    <input type="text" id="staffName" name="staff_name" readonly />
+                </div>
+                <div>
+                    <label for="customerName">Name</label>
+                    <input type="text" id="customerName" name="customer_name" placeholder="Your Name" required />
+                </div>
+                <div>
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" placeholder="Address" required />
+                </div>
+                <div>
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Phone Number" pattern="[0-9]{10}" required />
+                </div>
+                <div>
+                    <label for="landmark">Landmark (Optional)</label>
+                    <input type="text" id="landmark" name="landmark" placeholder="Landmark" />
+                </div>
+                <div>
+                    <label for="note">Note (Optional)</label>
+                    <textarea id="note" name="note" placeholder="Any special instructions" rows="2"></textarea>
+                </div>
+                <div>
+                    <label for="bookingDatetime">Date & Time</label>
+                    <input type="datetime-local" id="bookingDatetime" name="booking_datetime" min="2025-04-26T06:00" max="2025-12-31T21:00" required />
+                </div>
                 <div class="button-group">
-                    <button type="submit" name="confirm_booking" class="confirm-btn">Confirm Booking</button>
+                    <button type="submit" name="confirm_booking" class="confirm-btn">Book</button>
                     <button type="button" class="close-btn" onclick="closeBookingForm()">Cancel</button>
                 </div>
             </form>
@@ -557,10 +620,7 @@ if ($customer_id) {
         <?php endif; ?>
         <?php if ($booking_message): ?>
             alert("<?php echo addslashes($booking_message); ?>");
-            window.location.href = '/easy/customer/subservice.php';
-        <?php endif; ?>
-        <?php if ($booking_error): ?>
-            alert("<?php echo addslashes($booking_error); ?>");
+            window.location.href = '/easy/customer/my_bookings.php';
         <?php endif; ?>
 
         // Search Functionality
@@ -583,11 +643,16 @@ if ($customer_id) {
         }
 
         // Open Booking Form
-        function openBookingForm(service, worker, subserviceId) {
+        function openBookingForm(subserviceId, subserviceName, staffName, staffId) {
             const bookingContainer = document.getElementById("bookingContainer");
-            document.getElementById("serviceName").value = service;
-            document.getElementById("workerName").value = worker;
             document.getElementById("subserviceId").value = subserviceId;
+            document.getElementById("serviceName").value = subserviceName;
+            document.getElementById("staffName").value = staffName;
+            document.getElementById("staffId").value = staffId;
+            if (staffId == 0) {
+                alert("No staff assigned to this subservice.");
+                return;
+            }
             bookingContainer.style.visibility = "visible";
             bookingContainer.style.opacity = "1";
         }
@@ -597,26 +662,40 @@ if ($customer_id) {
             const bookingContainer = document.getElementById("bookingContainer");
             bookingContainer.style.visibility = "hidden";
             bookingContainer.style.opacity = "0";
+            document.getElementById("bookingForm").querySelector('form').reset();
         }
 
-        // Format Time for Submission
-        document.querySelector('form').addEventListener('submit', function (e) {
-            const hour = document.getElementById('hour').value;
-            const minute = document.getElementById('minute').value;
-            const period = document.getElementById('period').value;
+        // Go to Staff Profile
+        function goToStaffProfile(staffId) {
+            if (staffId == 0) {
+                alert("No staff assigned to this subservice.");
+                return;
+            }
+            window.location.href = '../staff_profile.php?id=' + staffId;
+        }
 
-            if (hour && minute && period) {
-                let hour24 = parseInt(hour);
-                if (period === 'PM' && hour24 !== 12) {
-                    hour24 += 12;
-                } else if (period === 'AM' && hour24 === 12) {
-                    hour24 = 0;
-                }
-                const time = `${hour24.toString().padStart(2, '0')}:${minute}:00`;
-                document.getElementById('bookingTime').value = time;
-            } else {
+        // Validate Datetime Input
+        document.getElementById('bookingDatetime').addEventListener('change', function (e) {
+            const datetime = new Date(e.target.value);
+            const hours = datetime.getHours();
+            const minutes = datetime.getMinutes();
+            if (hours < 6 || hours > 21 || (hours === 21 && minutes > 0)) {
+                alert('Please select a time between 6:00 AM and 9:00 PM.');
+                e.target.value = '';
+            }
+        });
+
+        // Validate Form Submission
+        document.querySelector('#bookingForm form').addEventListener('submit', function (e) {
+            const staffId = document.getElementById('staffId').value;
+            const datetime = document.getElementById('bookingDatetime').value;
+            if (!staffId) {
                 e.preventDefault();
-                alert('Please select a valid time.');
+                alert('No staff assigned to this subservice.');
+            }
+            if (!datetime) {
+                e.preventDefault();
+                alert('Please select a valid date and time between 6:00 AM and 9:00 PM.');
             }
         });
     </script>

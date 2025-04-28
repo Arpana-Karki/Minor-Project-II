@@ -1,3 +1,4 @@
+
 <?php
 // Start the session or any PHP logic needed
 session_start();
@@ -14,6 +15,8 @@ session_start();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -106,35 +109,82 @@ session_start();
         html {
             scroll-behavior: smooth;
         }
+        /* Swiper Slider Styling */
+        .testimonial-slider {
+            padding-bottom: 50px; /* Space for pagination */
+            position: relative;
+        }
+        .testimonial-slider .swiper-slide {
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        .testimonial-slider .swiper-slide-active {
+            opacity: 1;
+        }
+        .testimonial-slider .swiper-button-prev,
+        .testimonial-slider .swiper-button-next {
+            color: #4f46e5;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+        /* .testimonial-slider .swiper-button-prev:hover,
+        .testimonial-slider .swiper-button-next:hover {
+            background: #4f46e5;
+            color: white;
+        } */
+        .testimonial-slider .swiper-pagination {
+            position: absolute;
+            bottom: 10px;
+        }
+        .testimonial-slider .swiper-pagination-bullet {
+            background: #4f46e5;
+            opacity: 0.5;
+        }
+        .testimonial-slider .swiper-pagination-bullet-active {
+            opacity: 1;
+        }
+        /* Hide Swiper elements outside testimonial section */
+        .swiper-button-prev:not(.testimonial-slider .swiper-button-prev),
+        .swiper-button-next:not(.testimonial-slider .swiper-button-next),
+        .swiper-pagination:not(.testimonial-slider .swiper-pagination) {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
     
-                <!-- Navbar -->
-<nav class="navbar sticky top-0 z-50">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <a href="index.php" class="text-2xl font-bold text-indigo-600 animate-scale-in">EasyLiving</a>
-        <div class="flex items-center space-x-6">
-            <ul class="flex space-x-6 text-gray-700">
-                <li><a href="index.php" class="nav-link hover:text-indigo-600">Home</a></li>
-                <li><a href="about.html" class="nav-link hover:text-indigo-600">About</a></li>
-                <li><a href="customer/subservice.php" class="nav-link hover:text-indigo-600">Services</a></li>
-            </ul>
-            <!-- Wishlist -->
-            <a href="customer/favorites.php" class="action-btn">
-                <i class="fas fa-heart mr-2"></i> Wishlist
-            </a>
-            <!-- My Bookings -->
-            <a href="customer/my_bookings.php" class="action-btn">
-                <i class="fas fa-calendar-check mr-2"></i> My Bookings
-            </a>
-            <!-- My Profile -->
-            <a href="profile.php" class="action-btn">
-                <i class="fas fa-user-circle mr-2"></i> My Profile
-            </a>
+    <!-- Navbar -->
+    <nav class="navbar sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.php" class="text-2xl font-bold text-indigo-600 animate-scale-in">EasyLiving</a>
+            <div class="flex items-center space-x-6">
+                <ul class="flex space-x-6 text-gray-700">
+                    <li><a href="index.php" class="nav-link hover:text-indigo-600">Home</a></li>
+                    <li><a href="about.php" class="nav-link hover:text-indigo-600">About</a></li>
+                    <li><a href="./customer/customer_package.php" class="nav-link hover:text-indigo-600">Packages</a></li>
+                    <li><a href="./customer/subservice.php" class="nav-link hover:text-indigo-600">Services</a></li>
+                </ul>
+                <!-- Wishlist -->
+                <a href="customer/favorites.php" class="action-btn">
+                    <i class="fas fa-heart mr-2"></i> Wishlist
+                </a>
+                <!-- My Bookings -->
+                <a href="customer/my_bookings.php" class="action-btn">
+                    <i class="fas fa-calendar-check mr-2"></i> My Bookings
+                </a>
+                <!-- My Profile -->
+                <a href="profile.php" class="action-btn">
+                    <i class="fas fa-user-circle mr-2"></i> My Profile
+                </a>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
@@ -160,21 +210,21 @@ session_start();
                     <h3 class="text-xl font-semibold mb-2">Plumbing & Electrician</h3>
                     <p class="text-gray-600 mb-4">Leaky faucets, pipe repairs, wiring, and more – let us handle it!</p>
                     <img src="./image/electric.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
-                    <a href="services.html" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                    <a href="./customer/customer_package.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
                 </div>
                 <div class="service-card bg-gray-50 p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
                     <i class="fas fa-broom text-4xl text-indigo-600 mb-4"></i>
                     <h3 class="text-xl font-semibold mb-2">Home Cleaning & Laundry</h3>
                     <p class="text-gray-600 mb-4">Our professionals will leave your home spotless.</p>
                     <img src="./image/clen.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
-                    <a href="services.html" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                    <a href="./customer/customer_package.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
                 </div>
                 <div class="service-card bg-gray-50 p-6 rounded-lg shadow-md transition transform animate-fade-in-up">
                     <i class="fas fa-paint-roller text-4xl text-indigo-600 mb-4"></i>
                     <h3 class="text-xl font-semibold mb-2">Cook & Decoration</h3>
                     <p class="text-gray-600 mb-4">Professional Decoration services to refresh your space.</p>
                     <img src="./image/cook.jpeg" alt="Service Image" class="w-full h-40 object-cover rounded-lg mb-4">
-                    <a href="services.html" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
+                    <a href="./customer/customer_package.php" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Learn More</a>
                 </div>
             </div>
         </div>
@@ -211,25 +261,59 @@ session_start();
     <section class="py-16 bg-gray-200">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center mb-12 animate-fade-in-up">Client Says About Our Services</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-fade-in-up">
-                    <img src="./image/balen.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
-                    <p class="text-gray-600 mb-4">"Easy Living provides exceptional services! I booked an electrician, and the work was done professionally and on time."</p>
-                    <h3 class="font-semibold">Balen Shah</h3>
-                    <p class="text-gray-500">Mayor of Kathmandu</p>
+            <div class="swiper-container testimonial-slider">
+                <div class="swiper-wrapper">
+                    <!-- Testimonial 1 -->
+                    <div class="swiper-slide">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                            <img src="./image/balen.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"Easy Living provides exceptional services! I booked an electrician, and the work was done professionally and on time."</p>
+                            <h3 class="font-semibold">Balen Shah</h3>
+                            <p class="text-gray-500">Mayor of Kathmandu</p>
+                        </div>
+                    </div>
+                    <!-- Testimonial 2 -->
+                    <div class="swiper-slide">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                            <img src="./image/pra.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"Reliable, efficient, and professional! The home cleaning service was outstanding."</p>
+                            <h3 class="font-semibold">Parash Khadka</h3>
+                            <p class="text-gray-500">Former Cricketer</p>
+                        </div>
+                    </div>
+                    <!-- Testimonial 3 -->
+                    <div class="swiper-slide">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                            <img src="./image/pri.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"I was impressed by the seamless experience of booking a home cleaning service."</p>
+                            <h3 class="font-semibold">Priyanka Karki</h3>
+                            <p class="text-gray-500">Actress</p>
+                        </div>
+                    </div>
+                    <!-- Testimonial 4 -->
+                    <div class="swiper-slide">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                            <img src="./image/client4.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"The plumbing service was top-notch! Quick response and excellent work."</p>
+                            <h3 class="font-semibold">Anita Shrestha</h3>
+                            <p class="text-gray-500">Business Owner</p>
+                        </div>
+                    </div>
+                    <!-- Testimonial 5 -->
+                    <div class="swiper-slide">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center mx-4">
+                            <img src="./image/client5.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
+                            <p class="text-gray-600 mb-4">"I highly recommend their decoration services. My home looks amazing!"</p>
+                            <h3 class="font-semibold">Ramesh Gurung</h3>
+                            <p class="text-gray-500">Teacher</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-fade-in-up">
-                    <img src="./image/pra.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
-                    <p class="text-gray-600 mb-4">"Reliable, efficient, and professional! The home cleaning service was outstanding."</p>
-                    <h3 class="font-semibold">Parash Khadka</h3>
-                    <p class="text-gray-500">Former Cricketer</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-fade-in-up">
-                    <img src="./image/pri.jpeg" alt="Client" class="w-20 h-20 rounded-full mx-auto mb-4">
-                    <p class="text-gray-600 mb-4">"I was impressed by the seamless experience of booking a home cleaning service."</p>
-                    <h3 class="font-semibold">Priyanka Karki</h3>
-                    <p class="text-gray-500">Actress</p>
-                </div>
+                <!-- Navigation Buttons -->
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+                <!-- Pagination -->
+                <div class="swiper-pagination"></div>
             </div>
         </div>
     </section>
@@ -283,15 +367,49 @@ session_start();
         // Dropdown fix: Keep open on hover
         const dropdown = document.querySelector('.dropdown');
         const dropdownMenu = document.querySelector('.dropdown-menu');
-        dropdown.addEventListener('mouseenter', () => {
-            dropdownMenu.style.display = 'block';
-            dropdownMenu.style.opacity = '1';
-            dropdownMenu.style.transform = 'translateY(0)';
-        });
-        dropdown.addEventListener('mouseleave', () => {
-            dropdownMenu.style.display = 'none';
-            dropdownMenu.style.opacity = '0';
-            dropdownMenu.style.transform = 'translateY(-10px)';
+        if (dropdown && dropdownMenu) {
+            dropdown.addEventListener('mouseenter', () => {
+                dropdownMenu.style.display = 'block';
+                dropdownMenu.style.opacity = '1';
+                dropdownMenu.style.transform = 'translateY(0)';
+            });
+            dropdown.addEventListener('mouseleave', () => {
+                dropdownMenu.style.display = 'none';
+                dropdownMenu.style.opacity = '0';
+                dropdownMenu.style.transform = 'translateY(-10px)';
+            });
+        }
+    </script>
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        // Initialize Swiper for testimonial slider only
+        const swiper = new Swiper('.testimonial-slider', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            loop: true,
+            pagination: {
+                el: '.testimonial-slider .swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.testimonial-slider .swiper-button-next',
+                prevEl: '.testimonial-slider .swiper-button-prev',
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                },
+            },
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
         });
     </script>
 </body>

@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 if (!isset($_SESSION['admin_email'])) {
@@ -130,6 +131,7 @@ if (!isset($_SESSION['admin_email'])) {
             <a href="booking.php"><i class="fas fa-calendar-check"></i> View Bookings</a>
             <a href="service.php"><i class="fas fa-tools"></i> Manage Services</a>
             <a href="staff.php"><i class="fas fa-user-cog"></i> Manage Staff</a>
+            <a href="package.php"><i class="fas fa-box-open"></i> Manage Packages</a>
         </div>
         <div class="logout">
             <br><br>
@@ -138,3 +140,4 @@ if (!isset($_SESSION['admin_email'])) {
     </div>
 </body>
 </html>
+
